@@ -22,10 +22,10 @@ public class BattleDialog extends JDialog implements ActionListener {
 	private static final long serialVersionUID = -5449215626352565697L;
 	
 	private final JPanel contentPanel = new JPanel();
-	private DefaultListModel availableRobots;
-	private DefaultListModel selectedRobots;
-	private JList availableRobotList; 
-	private JList selectedRobotList;
+	private DefaultListModel<ClassInfo> availableRobots;
+	private DefaultListModel<ClassInfo> selectedRobots;
+	private JList<ClassInfo> availableRobotList; 
+	private JList<ClassInfo> selectedRobotList;
 	private MainWindow owner;
 	private JButton okButton;
 	
@@ -52,8 +52,8 @@ public class BattleDialog extends JDialog implements ActionListener {
 		availableScroll.setPreferredSize(new Dimension(100,200));
 		panel.add(availableScroll);
 		
-		availableRobots = new DefaultListModel();
-		availableRobotList = new JList(availableRobots);
+		availableRobots = new DefaultListModel<ClassInfo>();
+		availableRobotList = new JList<ClassInfo>(availableRobots);
 		availableRobotList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		availableScroll.setViewportView(availableRobotList);
 		
@@ -81,8 +81,8 @@ public class BattleDialog extends JDialog implements ActionListener {
 		selectedScroll.setPreferredSize(new Dimension(100,200));
 		panel_2.add(selectedScroll);
 		
-		selectedRobots = new DefaultListModel();
-		selectedRobotList = new JList(selectedRobots);
+		selectedRobots = new DefaultListModel<ClassInfo>();
+		selectedRobotList = new JList<ClassInfo>(selectedRobots);
 		selectedRobotList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		selectedScroll.setViewportView(selectedRobotList);
 		{
@@ -123,7 +123,7 @@ public class BattleDialog extends JDialog implements ActionListener {
 		int n = selectedRobots.size();
 		ClassInfo[] robots = new ClassInfo[n];
 		for(int i=0;i<n;++i) {
-			robots[i] = (ClassInfo)selectedRobots.get(i);
+			robots[i] = selectedRobots.get(i);
 		}
 		return robots;
 	}
