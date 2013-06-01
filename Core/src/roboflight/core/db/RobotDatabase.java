@@ -26,9 +26,13 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import roboflight.Robot;
 
 /**
  * Manages the robots and their locations.
@@ -51,6 +55,26 @@ public class RobotDatabase {
 	private final ArrayList<ClassInfo> robots = new ArrayList<ClassInfo>();
 	private final ArrayList<String> directories = new ArrayList<String>();
 
+	public Robot createRobotInstance(ClassInfo info) throws IOException, ReflectiveOperationException {
+		//I think it goes something like this
+		URLClassLoader loader = new URLClassLoader(
+				new URL[] { info.parent.toURI().toURL() },
+				ClassLoader.getSystemClassLoader());
+		
+		//For when we go to implement the output change
+//		Class<?> system = loader.loadClass("java.lang.System");
+//		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//		PrintStream out = new PrintStream(baos, true, "UTF-8");
+//		system.getMethod("setOut", PrintStream.class).invoke(null, out);
+//		system.getMethod("setErr", PrintStream.class).invoke(null, out);
+		
+		Class<?> robot = loader.loadClass(info.toString());
+		
+		loader.close();
+		
+		return (Robot)robot.newInstance();
+	}
+	
 	public void addDirectory(final String dir) {
 		directories.add(dir);
 	}

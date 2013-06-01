@@ -22,8 +22,6 @@
  */
 package roboflight.core;
 
-import java.net.URL;
-import java.net.URLClassLoader;
 import roboflight.Robot;
 import roboflight.core.db.ClassInfo;
 import roboflight.core.db.RobotDatabase;
@@ -55,18 +53,8 @@ public class Engine {
 		
 		//load robots
 		for(int i=0;i<classes.length;++i) {
-			ClassInfo info = classes[i];
 			try {
-				//I think it goes something like this
-				URLClassLoader loader = new URLClassLoader(
-						new URL[] { info.parent.toURI().toURL() },
-						ClassLoader.getSystemClassLoader());
-				
-				Class<?> robot = loader.loadClass(info.toString());
-				
-				loader.close();
-				
-				robots[i] = (Robot)robot.newInstance();
+				robots[i] = database.createRobotInstance(classes[i]);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
