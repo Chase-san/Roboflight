@@ -64,6 +64,8 @@ public class Engine {
 				
 				Class<?> robot = loader.loadClass(info.toString());
 				
+				loader.close();
+				
 				robots[i] = (Robot)robot.newInstance();
 			} catch(Exception e) {
 				e.printStackTrace();
