@@ -65,8 +65,6 @@ public class RenderDisplay extends Canvas {
 	public static boolean DRAW_AXIS = true;
 	public static boolean DRAW_GRID = true;
 	public static boolean DRAW_ROBOT_LOCATORS = false;
-	public static boolean DRAW_COMPLEX_ARENA = false;
-
 	
 	private boolean created = false;
 	private boolean dispose = false;
@@ -493,14 +491,11 @@ public class RenderDisplay extends Canvas {
 		glColor3f(0.4f, 0.4f, 0.5f);
 
 		// draw the arena
-		if (DRAW_COMPLEX_ARENA) {
-			drawSphere(0, 0, 0, 1, 64);
-		} else {
-			glColor3f(0.4f, 0.2f, 0.2f);
-			float x = camera.distance;
-			x = .18666666f * x * x + -1.0233333f * x + 2.46f;
-			drawCircle(0, 0, 0, x, 64);
-		}
+		glColor3f(0.4f, 0.2f, 0.2f);
+		float x = camera.distance;
+		x = .18666666f * x * x + -1.0233333f * x + 2.46f;
+		drawCircle(0, 0, 0, x, 64);
+		
 
 		BattleRunner battle = engine.getCurrentBattle();
 

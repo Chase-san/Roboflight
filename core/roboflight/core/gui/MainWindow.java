@@ -102,15 +102,6 @@ public class MainWindow extends JFrame {
 		dialog = new BattleDialog(this);
 		
 		{
-			final JCheckBox chckbxComplexArena = new JCheckBox("Complex Arena");
-			chckbxComplexArena.setSelected(RenderDisplay.DRAW_COMPLEX_ARENA);
-			chckbxComplexArena.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(final ActionEvent e) {
-					RenderDisplay.DRAW_COMPLEX_ARENA = chckbxComplexArena.isSelected();
-				}
-			});
-			sidePanel.add(chckbxComplexArena);
 			final JCheckBox chckbxRobotLocators = new JCheckBox("Robot Locators");
 			chckbxRobotLocators.setSelected(RenderDisplay.DRAW_ROBOT_LOCATORS);
 			chckbxRobotLocators.addActionListener(new ActionListener() {
