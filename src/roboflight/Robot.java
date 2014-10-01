@@ -63,7 +63,7 @@ public interface Robot {
 	public void onTurnStarted();
 	
 	/**
-	 * Used to set the RobotPeer for this robot. Your robot should not call this class!
+	 * Used to set the RobotPeer for this robot. There shouldn't be a need to call this method yourself.
 	 * @param peer The RobotPeer set by the game
 	 */
 	public void setRobotPeer(RobotPeer peer);

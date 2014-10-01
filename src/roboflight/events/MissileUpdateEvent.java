@@ -25,7 +25,7 @@ package roboflight.events;
 import roboflight.util.Vector;
 
 /**
- * This interface is used to supply information about a Missile.
+ * This interface defines an event that is generated when a missile is updated.
  * @author Robert Maupin
  */
 public interface MissileUpdateEvent {

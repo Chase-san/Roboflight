@@ -92,7 +92,9 @@ public class Camera extends Vector3f {
 		//Calculate the rotation
 		final Quaternion xz = new Quaternion(0f, (float) Math.sin(angleXZ * 0.5), 0f, (float) Math.cos(angleXZ * 0.5));
 		final Quaternion y = new Quaternion(0f, 0f, (float) Math.sin(angleY * 0.5), (float) Math.cos(angleY * 0.5));
+		
 		Quaternion.mul(xz, y, rotation);
+		
 		// Now for the magical bit. This is how you 'project' in 3D.
 		final Quaternion rot = new Quaternion(rotation);
 		Quaternion.mul(rot, new Quaternion(1, 0, 0, 0), rot);

@@ -25,7 +25,7 @@ package roboflight.events;
 import roboflight.util.Vector;
 
 /**
- * A UpdateEvent contains information about a robot.
+ * This interface defines an event that is generated when a robot's information is updated.
  * 
  * @author Robert Maupin
  */

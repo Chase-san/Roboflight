@@ -6,3 +6,4 @@ tmp/
 *.bak
 .settings/
 *lwjgl*
+robots/sample/*.class

@@ -25,7 +25,7 @@ package roboflight.events;
 import roboflight.Bullet;
 
 /**
- * A BulletHitEvent is an Event that occurs when the robot bullet hits another robot.
+ * This interface defines an event that is generated when a bullet from your robot hits another robot.
  * @author Robert Maupin
  */
 public interface BulletHitEvent {

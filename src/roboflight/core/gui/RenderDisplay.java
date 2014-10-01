@@ -46,11 +46,15 @@ import roboflight.util.Vector;
 
 /**
  * This class is a mess and I know it.
+ * This uses old style open gl rendering.
+ * It should be updated to use a scene graph, shaders and such.
  * 
  * @author Robert Maupin
  * 
  */
 public class RenderDisplay extends Canvas {
+	private static final long serialVersionUID = 6222790311368212989L;
+	
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 600;
 	private static final float FOV = 70f;
@@ -63,7 +67,7 @@ public class RenderDisplay extends Canvas {
 	public static boolean DRAW_ROBOT_LOCATORS = false;
 	public static boolean DRAW_COMPLEX_ARENA = false;
 
-	private static final long serialVersionUID = 6222790311368212989L;
+	
 	private boolean created = false;
 	private boolean dispose = false;
 	private boolean drag = false;
@@ -90,7 +94,7 @@ public class RenderDisplay extends Canvas {
 
 	/**
 	 * Changes your transformation matrix into a billboard matrix. This requires
-	 * that you used glTranslate to position your objects.
+	 * that you use glTranslate to position your objects.
 	 */
 	private void alignToCamera() {
 		FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
@@ -224,7 +228,7 @@ public class RenderDisplay extends Canvas {
 			}
 			glEnd();
 
-			// TODO lets hope they don't go above 26 for now
+			// TODO move this to GUI rendering in 2D
 			drawText((float) p.x, (float) p.y + 0.1f, (float) p.z, ""
 					+ (char) (0x41 + index++));
 		}
@@ -281,6 +285,7 @@ public class RenderDisplay extends Canvas {
 			glVertex3d(Math.sin(angle * i) * r, Math.cos(angle * i) * r, 0);
 		}
 		glEnd();
+		
 		glPopMatrix();
 	}
 
@@ -506,6 +511,9 @@ public class RenderDisplay extends Canvas {
 				drawAllRobots(battle);
 			}
 
+		
+		//TODO draw GUI
+		
 		glFlush();
 		glPopMatrix();
 	}

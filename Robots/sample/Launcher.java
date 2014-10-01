@@ -38,6 +38,7 @@ public class Launcher extends BasicRobot {
 			lastTime = getTime();
 		}
 		
+		//thurst in this direction for 20 turns
 		if(getTime() - lastTime < 20) {
 			thrust = p.normalize().scale(-1);
 		}
