@@ -339,53 +339,6 @@ public class RenderDisplay extends Canvas {
 		drawCircle(x, y, z,(float) (Rules.ROBOT_RADIUS / Rules.BATTLEFIELD_RADIUS), 8);
 	}
 
-	private void drawSphere(float x, float y, float z, float r, int segments) {
-		glPushMatrix();
-
-		glTranslatef(x, y, z);
-
-		double angle = Math.PI * 2 / segments;
-
-		double nr = Math.sin(Math.PI / 3);
-		double nh = Math.cos(Math.PI / 3);
-
-		// MID TOP
-		glBegin(GL_LINE_LOOP);
-		for (int i = 0; i < segments; ++i) {
-			glVertex3d(Math.sin(angle * i) * nr, nh, Math.cos(angle * i) * nr);
-		}
-		glEnd();
-
-		// MID BOTTOM
-		glBegin(GL_LINE_LOOP);
-		for (int i = 0; i < segments; ++i) {
-			glVertex3d(Math.sin(angle * i) * nr, -nh, Math.cos(angle * i) * nr);
-		}
-		glEnd();
-
-		// CENTER
-		glBegin(GL_LINE_LOOP);
-		for (int i = 0; i < segments; ++i) {
-			glVertex3d(Math.sin(angle * i) * r, 0, Math.cos(angle * i) * r);
-		}
-		glEnd();
-
-		// VERTICAL LINES
-		glBegin(GL_LINE_LOOP);
-		for (int i = 0; i < segments; ++i) {
-			glVertex3d(Math.sin(angle * i) * r, Math.cos(angle * i) * r, 0);
-		}
-		glEnd();
-
-		glBegin(GL_LINE_LOOP);
-		for (int i = 0; i < segments; ++i) {
-			glVertex3d(0, Math.sin(angle * i) * r, Math.cos(angle * i) * r);
-		}
-		glEnd();
-
-		glPopMatrix();
-	}
-
 	private void drawText(float x, float y, float z, String text) {
 		glPushMatrix();
 
