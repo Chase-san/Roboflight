@@ -26,6 +26,11 @@ import roboflight.Robot;
 import roboflight.core.db.ClassInfo;
 import roboflight.core.db.RobotDatabase;
 
+/**
+ * This class is responsible for running and managing battles.
+ * @author Robert Maupin
+ *
+ */
 public class Engine {
 	
 	private BattleRunner current;
@@ -35,11 +40,7 @@ public class Engine {
 		//test directory
 		database = new RobotDatabase();
 		
-		if("eclipse".equals(System.getProperty("environment"))) {
-			database.addDirectory("../RoboflightRobots/bin");
-		} else {
-			database.addDirectory("robots");
-		}
+		database.addDirectory("robots");
 		
 		database.rebuildDatabase();
 	}

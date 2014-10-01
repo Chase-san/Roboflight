@@ -180,25 +180,23 @@ public class RobotPeerImpl implements RobotPeer {
 	public void update() {
 		Vector thrust = this.thrust.clone();
 		if(enabled) {
-			if(thrust.lengthSq() > 0)
-				System.out.print("A " + this.thrust);
-			
 			// normalize thrust if we need to
 			if(thrust.lengthSq() > Rules.ROBOT_MAX_THRUST * Rules.ROBOT_MAX_THRUST)
 				thrust.normalize().scale(Rules.ROBOT_MAX_THRUST);
+			
 			// update velocity
 			velocity.add(thrust);
-			// deplete thrust
-			this.thrust.sub(thrust);
 			
-			if(thrust.lengthSq() > 0)
-				System.out.println(" B "+this.thrust);
+			// deplete thrust
+			this.thrust.set(0,0,0);
 		}
 		// normalize velocity if we need to
 		if(velocity.lengthSq() > Rules.ROBOT_MAX_VELOCITY * Rules.ROBOT_MAX_VELOCITY)
 			velocity.normalize().scale(Rules.ROBOT_MAX_VELOCITY);
+		
 		if(!Rules.isRobotInBattlefield(position.clone().add(velocity)))
 			velocity.set(0, 0, 0);
+		
 		// update position
 		position.add(velocity);
 		lastThrust.set(thrust);

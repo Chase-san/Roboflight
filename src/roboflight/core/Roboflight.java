@@ -23,9 +23,14 @@
 package roboflight.core;
 
 import java.awt.EventQueue;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Locale;
 
 import javax.swing.UIManager;
+
 import roboflight.core.gui.MainWindow;
 
 /**
@@ -38,11 +43,17 @@ public class Roboflight {
 	public static final String ARTIFACT_VERSION = "0.4 MS1";
 	public static final String ARTIFACT_TITLE = Roboflight.ARTIFACT_NAME + " " + Roboflight.ARTIFACT_VERSION;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		try {
 			Locale.setDefault(Locale.US);
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch(Exception e) { /* Failure is unimportant. */ }
+		
+		if(!isDevelopmentEnvironment()) {
+			//We only need to manually load the libraries if we are not
+			//in development, as the development system takes care of that.
+			loadLibraries();
+		}
 		
 		final Engine engine = new Engine();
 		
@@ -61,5 +72,27 @@ public class Roboflight {
 		} catch(InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static boolean isDevelopmentEnvironment() {
+		if(System.getenv("eclipse") == null) {
+			return false;
+		}
+		return true;
+	}
+	
+	private static void loadLibraries() throws Exception {
+		//load all software libraries
+		for(File file : new File("lib").listFiles()) {
+			if(!file.getName().endsWith("jar"))
+				continue;
+			addSoftwareLibrary(file);
+		}
+	}
+	
+	private static void addSoftwareLibrary(File file) throws Exception {
+	    Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
+	    method.setAccessible(true);
+	    method.invoke(ClassLoader.getSystemClassLoader(), new Object[]{file.toURI().toURL()});
 	}
 }

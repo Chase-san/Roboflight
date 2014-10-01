@@ -190,21 +190,6 @@ public class Vector implements Cloneable {
 	}
 
 	/**
-	 * Divides this vector <b>weirdly</b> with the given vector. In short, every
-	 * component is divided by its counterpart in the given vector.
-	 * 
-	 * @param p
-	 *            The vector to multiply with.
-	 * @return This vector.
-	 */
-	public Vector divide(final Vector p) {
-		x /= p.x;
-		y /= p.y;
-		z /= p.z;
-		return this;
-	}
-
-	/**
 	 * Returns the scalar product of this vector and the given vector.
 	 * 
 	 * @param p
@@ -243,21 +228,6 @@ public class Vector implements Cloneable {
 	 */
 	public double lengthSq() {
 		return x * x + y * y + z * z;
-	}
-
-	/**
-	 * Multiplies this vector <b>weirdly</b> with the given vector. In short,
-	 * every component is multiplied with its counterpart in the given vector.
-	 * 
-	 * @param p
-	 *            The vector to multiply with.
-	 * @return This vector.
-	 */
-	public Vector multiply(final Vector p) {
-		x *= p.x;
-		y *= p.y;
-		z *= p.z;
-		return this;
 	}
 
 	/**
@@ -344,7 +314,7 @@ public class Vector implements Cloneable {
 	}
 
 	/**
-	 * Subtracts the given vector to this vector.
+	 * Subtracts the given vector from this vector.
 	 * 
 	 * @param b
 	 *            The vector to subtract.
@@ -357,7 +327,10 @@ public class Vector implements Cloneable {
 		return this;
 	}
 
+	/**
+	 * Returns a string representation of this vector.
+	 */
 	public String toString() {
-		return String.format("<%.4f,%.4f,%.4f>", x, y, z);
+		return String.format("<%f,%f,%f>", x, y, z);
 	}
 }
