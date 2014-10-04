@@ -31,7 +31,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import roboflight.Robot;
 
 /**
@@ -51,13 +50,13 @@ public class RobotDatabase {
 		}
 		return list;
 	}
-
+	
 	private final ArrayList<ClassInfo> robots = new ArrayList<ClassInfo>();
 	private final ArrayList<String> directories = new ArrayList<String>();
 
-	public Robot createRobotInstance(ClassInfo info) throws IOException, ReflectiveOperationException {
+	public Robot createRobotInstance(final ClassInfo info) throws IOException, ReflectiveOperationException {
 		//I think it goes something like this
-		URLClassLoader loader = new URLClassLoader(
+		final URLClassLoader loader = new URLClassLoader(
 				new URL[] { info.parent.toURI().toURL() },
 				ClassLoader.getSystemClassLoader());
 		

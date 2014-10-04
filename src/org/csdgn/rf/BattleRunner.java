@@ -37,7 +37,9 @@ import org.csdgn.rf.peer.RobotPeerImpl;
 import org.csdgn.rf.peer.RobotUpdateEventImpl;
 
 import roboflight.Robot;
+import roboflight.events.MissileUpdateEvent;
 import roboflight.events.RobotDeathEvent;
+import roboflight.events.RobotUpdateEvent;
 import roboflight.util.Rules;
 import roboflight.util.Utils;
 import roboflight.util.Vector;
@@ -49,15 +51,6 @@ import roboflight.util.Vector;
  */
 public class BattleRunner implements Runnable {
 	public static final int START_FPS = 20;
-	private double fps = START_FPS;
-	private long tick = 0;
-	private List<RobotPeerImpl> robots = new ArrayList<RobotPeerImpl>();
-	private List<BulletImpl> bullets = new ArrayList<BulletImpl>();
-	private List<MissileImpl> missiles = new ArrayList<MissileImpl>();
-	
-	private boolean running = false;
-	private boolean paused = false;
-	private Thread thread;
 	
 	public static BattleRunner create(Robot[] robot) {
 		BattleRunner runner = new BattleRunner();
@@ -88,30 +81,155 @@ public class BattleRunner implements Runnable {
 		return runner;
 	}
 	
-	public void start() {
-		if(thread == null) {
-			running = true;
-			(thread = new Thread(this, "BattleThread")).start();
-		}
-	}
+	private double fps = START_FPS;
+	private long tick = 0;
+	private List<RobotPeerImpl> robots = new ArrayList<RobotPeerImpl>();
+	private List<BulletImpl> bullets = new ArrayList<BulletImpl>();
 	
-	public List<RobotPeerImpl> getRobotPeers() {
-		return robots;
+	private List<MissileImpl> missiles = new ArrayList<MissileImpl>();
+	private boolean running = false;
+	private boolean paused = false;
+	private boolean safe = true;
+	
+	public List<BulletImpl> getBullets() {
+		return bullets;
 	}
 	
 	public List<MissileImpl> getMissiles() {
 		return missiles;
 	}
 	
-	public List<BulletImpl> getBullets() {
-		return bullets;
+	public List<RobotPeerImpl> getRobotPeers() {
+		return robots;
 	}
 	
-	public void stop() throws InterruptedException {
+	public boolean isPaused() {
+		return paused;
+	}
+	
+	public boolean isSafe() {
+		return safe;
+	}
+	
+	@Override
+	public void run() {
+		running = true;
+		while(running) {
+			while(paused) {
+				try {
+					Thread.sleep(250);
+				} catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			long time = System.currentTimeMillis();
+			
+			synchronized(this) {
+				
+				for(RobotPeerImpl rp : robots) {
+					//update time
+					rp.setTime(tick);
+					
+					//run onBattleStarted
+					safe = false;
+					if(tick == 0)
+						rp.getRobot().onBattleStarted();
+					
+					//run onTurnStart
+					if(rp.isEnabled() && rp.isAlive())
+						rp.getRobot().onTurnStarted();
+					safe = true;
+				}
+				
+				updateBullets();
+				updateMissiles();
+				
+				//create a randomized list for the updates, makes things a little more fair
+				List<RobotPeerImpl> robots2 = new ArrayList<RobotPeerImpl>(robots);
+				Collections.shuffle(robots2);
+				
+				//We don't shuffle it for every separate robot, that would be annoying.
+				
+				//run update
+				for(RobotPeerImpl rp : robots) {
+					if(!rp.isEnabled() || !rp.isAlive())
+						continue;
+					
+					for(RobotPeerImpl rp2 : robots2) {
+						if(rp == rp2 || !rp2.isAlive())
+							continue;
+						RobotUpdateEvent rue = new RobotUpdateEventImpl(
+								rp2.getName(),
+								rp2.getVelocityVector(),
+								rp2.getPositionVector(),
+								rp2.getEnergy());
+						
+						safe = false;
+						rp.getRobot().onRobotUpdate(rue);
+						safe = true;
+					}
+				}
+				
+				//run on turn ended
+				for(RobotPeerImpl rp : robots) {
+					if(!rp.isAlive())
+						continue;
+					
+					safe = false;
+					if(rp.isEnabled())
+						rp.getRobot().onTurnEnded();
+					safe = true;
+					
+					//update robots
+					rp.update();
+					
+					if(!rp.isEnabled())
+						continue;
+					
+					//try and fire all bullets
+					BulletImpl b = rp.getBulletFired();
+					if(b != null) {
+						b.setActive(true);
+						bullets.add(b);
+					}
+					
+					//try and fire all missiles
+					MissileImpl m = rp.getMissileFired();
+					if(m != null) {
+						m.setActive(true);
+						missiles.add(m);
+					}
+					
+					if(rp.getEnergy() == 0) {
+						rp.disable();
+					}
+				}
+				
+				//randomize robot list?
+			}
+			
+			++tick;
+			
+			time = (long)((1000.0 / fps) - (System.currentTimeMillis() - time));
+			try {
+				Thread.sleep(time > 1 ? time : 1);
+			} catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void setFPS(double fps) {
+		this.fps = fps;
+	}
+	
+	public void setPaused(boolean paused) {
+		this.paused = paused;
+	}
+	
+	public void stop() {
 		running = false;
-		
-		//wait till we die
-		thread.join();
 	}
 	
 	private void updateBullets() {
@@ -146,8 +264,10 @@ public class BattleRunner implements Runnable {
 				bit.remove();
 				
 				//generate hitbybullet and bullethit events
+				safe = false;
 				b.getOwner().getRobot().onBulletHit(new BulletHitEventImpl(b,hit.getName()));
 				hit.getRobot().onHitByBullet(new HitByBulletEventImpl(b,b.getOwner().getName()));
+				safe = true;
 				
 				hit.setEnergy(hit.getEnergy() - Rules.BULLET_DAMAGE);
 				if(hit.getEnergy() <= 0) {
@@ -155,8 +275,10 @@ public class BattleRunner implements Runnable {
 					RobotDeathEvent e = new RobotDeathEventImpl(hit.getName());
 					
 					//inform all robots about the robot death
+					safe = false;
 					for(RobotPeerImpl rp : robots)
 						rp.getRobot().onRobotDeath(e);
+					safe = true;
 					
 					hit.kill();
 				}
@@ -224,8 +346,10 @@ public class BattleRunner implements Runnable {
 					RobotDeathEvent e = new RobotDeathEventImpl(hit.getName());
 					
 					//inform all robots about the robot death
+					safe = false;
 					for(RobotPeerImpl rp : robots)
 						rp.getRobot().onRobotDeath(e);
+					safe = true;
 					
 					hit.kill();
 				}
@@ -252,129 +376,20 @@ public class BattleRunner implements Runnable {
 						
 						if(!blocked) {
 							//send update
-							rp.getRobot().onMissileUpdate(new MissileUpdateEventImpl(
+							MissileUpdateEvent mue = new MissileUpdateEventImpl(
 									m.getOwner().getName(),
 									m.getVelocity(),
 									m.getPosition(),
-									m.getOwner() == rp));
+									m.getOwner() == rp);
+							
+							safe = false;
+							rp.getRobot().onMissileUpdate(mue);
+							safe = true;
 						}
 					}
 			}
 			
 			m.update();
-		}
-	}
-	
-	public void setFPS(double fps) {
-		this.fps = fps;
-	}
-	
-	public void setPaused(boolean paused) {
-		this.paused = paused;
-	}
-	
-	public boolean isPaused() {
-		return paused;
-	}
-	
-	public void run() {
-		while(running) {
-			while(paused) {
-				try {
-					Thread.sleep(250);
-				} catch(InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			long time = System.currentTimeMillis();
-			
-			synchronized(this) {
-				
-				for(RobotPeerImpl rp : robots) {
-					//update time
-					rp.setTime(tick);
-					
-					//run onBattleStarted
-					if(tick == 0)
-						rp.getRobot().onBattleStarted();
-					
-					//run onTurnStart
-					if(rp.isEnabled() && rp.isAlive())
-						rp.getRobot().onTurnStarted();
-				}
-				
-				updateBullets();
-				updateMissiles();
-				
-				//create a randomized list for the updates, makes things a little more fair
-				List<RobotPeerImpl> robots2 = new ArrayList<RobotPeerImpl>(robots);
-				Collections.shuffle(robots2);
-				
-				//We don't shuffle it for every separate robot, that would be annoying.
-				
-				//run update
-				for(RobotPeerImpl rp : robots) {
-					if(!rp.isEnabled() || !rp.isAlive())
-						continue;
-					
-					for(RobotPeerImpl rp2 : robots2) {
-						if(rp == rp2 || !rp2.isAlive())
-							continue;
-						rp.getRobot().onRobotUpdate(
-								new RobotUpdateEventImpl(
-										rp2.getName(),
-										rp2.getVelocityVector(),
-										rp2.getPositionVector(),
-										rp2.getEnergy()
-								));
-					}
-				}
-				
-				//run on turn ended
-				for(RobotPeerImpl rp : robots) {
-					if(!rp.isAlive())
-						continue;
-					
-					if(rp.isEnabled())
-						rp.getRobot().onTurnEnded();
-					
-					//update robots
-					rp.update();
-					
-					if(!rp.isEnabled())
-						continue;
-					
-					//try and fire all bullets
-					BulletImpl b = rp.getBulletFired();
-					if(b != null) {
-						b.setActive(true);
-						bullets.add(b);
-					}
-					
-					//try and fire all missiles
-					MissileImpl m = rp.getMissileFired();
-					if(m != null) {
-						m.setActive(true);
-						missiles.add(m);
-					}
-					
-					if(rp.getEnergy() == 0) {
-						rp.disable();
-					}
-				}
-				
-				//randomize robot list?
-			}
-			
-			++tick;
-			
-			time = (long)((1000.0 / fps) - (System.currentTimeMillis() - time));
-			try {
-				Thread.sleep(time > 1 ? time : 1);
-			} catch(InterruptedException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }

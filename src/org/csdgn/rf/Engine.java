@@ -22,8 +22,13 @@
  */
 package org.csdgn.rf;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
 import org.csdgn.rf.db.ClassInfo;
 import org.csdgn.rf.db.RobotDatabase;
+import org.csdgn.rf.db.SandboxSecurityManager;
 
 import roboflight.Robot;
 
@@ -34,6 +39,8 @@ import roboflight.Robot;
  */
 public class Engine {
 	
+	private final Executor battleExecutor;
+	private final SandboxSecurityManager security;
 	private BattleRunner current;
 	private RobotDatabase database;
 	
@@ -44,6 +51,19 @@ public class Engine {
 		database.addDirectory("robots");
 		
 		database.rebuildDatabase();
+		
+		
+		battleExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread thread = Executors.defaultThreadFactory().newThread(r);
+				thread.setName("BattleThread");
+				return thread;
+			}
+		});
+		
+		security = new SandboxSecurityManager(this);
+		System.setSecurityManager(security);
 	}
 	
 	public RobotDatabase getDatabase() {
@@ -68,24 +88,19 @@ public class Engine {
 	public void startBattle(Robot[] robots) {
 		stopCurrentBattle();
 		current = BattleRunner.create(robots);
-		current.start();
+		battleExecutor.execute(current);
 	}
 	
 	public void stopCurrentBattle() {
 		if(current != null) {
-			//shut it down
-			try {
-				//to stop it quickly
-				current.setFPS(BattleRunner.START_FPS);
-				
-				//unpause it (or it will never stop)
-				if(current.isPaused())
-					current.setPaused(false);
-				
-				current.stop();
-			} catch(InterruptedException e) {
-				e.printStackTrace();
-			}
+			//shut it down to stop it quickly
+			current.setFPS(BattleRunner.START_FPS);
+			
+			current.stop();
+			
+			//unpause it (or it will never stop)
+			if(current.isPaused())
+				current.setPaused(false);
 			
 			current = null;
 		}
