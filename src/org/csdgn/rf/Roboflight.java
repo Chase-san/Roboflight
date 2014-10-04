@@ -20,7 +20,7 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package roboflight.core;
+package org.csdgn.rf;
 
 import java.awt.EventQueue;
 import java.io.File;
@@ -31,7 +31,7 @@ import java.util.Locale;
 
 import javax.swing.UIManager;
 
-import roboflight.core.gui.MainWindow;
+import org.csdgn.rf.gui.MainWindow;
 
 /**
  * The Main Roboflight class.

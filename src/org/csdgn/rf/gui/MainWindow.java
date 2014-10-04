@@ -20,7 +20,7 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package roboflight.core.gui;
+package org.csdgn.rf.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -44,11 +45,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.RepaintManager;
 import javax.swing.WindowConstants;
-import roboflight.core.BattleRunner;
-import roboflight.core.Engine;
-import roboflight.core.Roboflight;
-import roboflight.core.db.ClassInfo;
-import roboflight.core.peer.RobotPeerImpl;
+
 import roboflight.util.Rules;
 
 import javax.swing.JButton;
@@ -56,6 +53,12 @@ import javax.swing.JSlider;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+
+import org.csdgn.rf.BattleRunner;
+import org.csdgn.rf.Engine;
+import org.csdgn.rf.Roboflight;
+import org.csdgn.rf.db.ClassInfo;
+import org.csdgn.rf.peer.RobotPeerImpl;
 
 /**
  * Main display window for the game. By the way, I hate GUIs.

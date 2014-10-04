@@ -1,4 +1,4 @@
-package roboflight.core.peer;
+package org.csdgn.rf.peer;
 
 import roboflight.Missile;
 import roboflight.util.Rules;

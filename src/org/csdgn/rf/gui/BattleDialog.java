@@ -1,7 +1,8 @@
-package roboflight.core.gui;
+package org.csdgn.rf.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -13,8 +14,10 @@ import javax.swing.BoxLayout;
 import javax.swing.border.TitledBorder;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
-import roboflight.core.Engine;
-import roboflight.core.db.ClassInfo;
+
+import org.csdgn.rf.Engine;
+import org.csdgn.rf.db.ClassInfo;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

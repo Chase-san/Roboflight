@@ -20,14 +20,21 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package roboflight.core.gui;
+package org.csdgn.rf.gui;
 
 import static org.lwjgl.opengl.GL11.*;
+
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.beans.Beans;
 import java.nio.FloatBuffer;
+
+import org.csdgn.rf.BattleRunner;
+import org.csdgn.rf.Engine;
+import org.csdgn.rf.peer.BulletImpl;
+import org.csdgn.rf.peer.MissileImpl;
+import org.csdgn.rf.peer.RobotPeerImpl;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
@@ -36,11 +43,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
-import roboflight.core.BattleRunner;
-import roboflight.core.Engine;
-import roboflight.core.peer.BulletImpl;
-import roboflight.core.peer.MissileImpl;
-import roboflight.core.peer.RobotPeerImpl;
+
 import roboflight.util.Rules;
 import roboflight.util.Vector;
 

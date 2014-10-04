@@ -20,21 +20,23 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package roboflight.core;
+package org.csdgn.rf;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.csdgn.rf.peer.BulletHitEventImpl;
+import org.csdgn.rf.peer.BulletImpl;
+import org.csdgn.rf.peer.HitByBulletEventImpl;
+import org.csdgn.rf.peer.MissileImpl;
+import org.csdgn.rf.peer.MissileUpdateEventImpl;
+import org.csdgn.rf.peer.RobotDeathEventImpl;
+import org.csdgn.rf.peer.RobotPeerImpl;
+import org.csdgn.rf.peer.RobotUpdateEventImpl;
+
 import roboflight.Robot;
-import roboflight.core.peer.BulletHitEventImpl;
-import roboflight.core.peer.BulletImpl;
-import roboflight.core.peer.HitByBulletEventImpl;
-import roboflight.core.peer.MissileImpl;
-import roboflight.core.peer.MissileUpdateEventImpl;
-import roboflight.core.peer.RobotDeathEventImpl;
-import roboflight.core.peer.RobotPeerImpl;
-import roboflight.core.peer.RobotUpdateEventImpl;
 import roboflight.events.RobotDeathEvent;
 import roboflight.util.Rules;
 import roboflight.util.Utils;

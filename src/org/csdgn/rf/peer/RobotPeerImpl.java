@@ -20,7 +20,7 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package roboflight.core.peer;
+package org.csdgn.rf.peer;
 
 import roboflight.Bullet;
 import roboflight.Missile;

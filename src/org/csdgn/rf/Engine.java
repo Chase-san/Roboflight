@@ -20,11 +20,12 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package roboflight.core;
+package org.csdgn.rf;
+
+import org.csdgn.rf.db.ClassInfo;
+import org.csdgn.rf.db.RobotDatabase;
 
 import roboflight.Robot;
-import roboflight.core.db.ClassInfo;
-import roboflight.core.db.RobotDatabase;
 
 /**
  * This class is responsible for running and managing battles.

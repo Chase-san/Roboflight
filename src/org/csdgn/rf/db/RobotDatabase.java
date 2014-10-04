@@ -20,7 +20,7 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package roboflight.core.db;
+package org.csdgn.rf.db;
 
 import java.io.BufferedInputStream;
 import java.io.File;
