@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013 Robert Maupin
+ * Copyright (c) 2013-2014 Robert Maupin
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -48,7 +48,7 @@ public interface Missile {
 	 * Returns if this missile is currently active. Missiles will not become
 	 * active until the turn after they are fired.
 	 * 
-	 * @return if the bullet is active.
+	 * @return true, if the missile is active.
 	 */
 	public boolean isActive();
 

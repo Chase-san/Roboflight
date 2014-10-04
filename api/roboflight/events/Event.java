@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013 Robert Maupin
+ * Copyright (c) 2013-2014 Robert Maupin
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -28,6 +28,8 @@ package roboflight.events;
  * @author Robert Maupin
  */
 public interface Event {
-	/** Turn of the event */
+	/**
+	 * Turn of the event.
+	 */
 	public long getTime();
 }
