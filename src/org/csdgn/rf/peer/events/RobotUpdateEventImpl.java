@@ -9,8 +9,8 @@ public class RobotUpdateEventImpl extends EventImpl implements RobotUpdateEvent 
 	private final Vector position;
 	private final double energy;
 
-	public RobotUpdateEventImpl(long time, final String name,
-			final Vector velocity, final Vector position, final double energy) {
+	public RobotUpdateEventImpl(long time, final String name, final Vector velocity, final Vector position,
+			final double energy) {
 		super(time);
 		this.name = name;
 		this.velocity = velocity;

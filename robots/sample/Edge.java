@@ -13,23 +13,23 @@ import roboflight.util.Vector;
  * 
  */
 public class Edge extends BasicRobot {
+	Vector thrust = new Vector(1, 0, 0);
+
 	@Override
 	public void onRobotUpdate(RobotUpdateEvent e) {
-		// Fire at the enemy 
+		// Fire at the enemy
 		// This is the roboflight version of head on targeting
 		setFireBullet(e.getPosition().sub(getPosition()));
 	}
-	
-	Vector thrust = new Vector(1,0,0);
 
 	@Override
 	public void onTurnEnded(TurnEndedEvent e) {
 		Vector p = getPosition();
 		setThrust(thrust);
-		
+
 		// If the distance from the center is 900 from the center we need to
 		// turn to avoid running into the edge
-		if (p.length() > 800) {
+		if(p.length() > 800) {
 			// Basically we need a perpendicular tangent space vector, this
 			// sounds complicated but is actually rather simple
 
@@ -58,8 +58,8 @@ public class Edge extends BasicRobot {
 			// But if we scale down the now inward (towards origin) vector, we
 			// can make a smoother turning curve, so lets do that.
 			p.scale(0.25);
-			
-			//You could replace the last two with p.scale(-0.25);
+
+			// You could replace the last two with p.scale(-0.25);
 
 			// Now we add it to the thrust
 			thrust.add(p);
@@ -68,7 +68,8 @@ public class Edge extends BasicRobot {
 			// is over MAX_ROBOT_THRUST. However lets do it for completeness.
 			thrust.normalize();
 
-			//Apply the thrust, this will override the previous thrust that was set above.
+			// Apply the thrust, this will override the previous thrust that was
+			// set above.
 			setThrust(thrust);
 		}
 	}

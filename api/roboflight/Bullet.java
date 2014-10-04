@@ -26,25 +26,29 @@ import roboflight.util.Vector;
 
 /**
  * Defines a bullet.
+ * 
  * @author Robert Maupin
  */
 public interface Bullet {
 	/**
-	 * Returns if this bullet is currently active. Bullets
-	 * will not become active until the turn after they are fired.
-	 * @return if the bullet is active.
-	 */
-	public boolean isActive();
-	
-	/**
 	 * Gets the position of the bullet.
+	 * 
 	 * @return the bullets position
 	 */
 	public Vector getPosition();
-	
+
 	/**
 	 * Gets the velocity of the bullet.
+	 * 
 	 * @return the bullets velocity
 	 */
 	public Vector getVelocity();
+
+	/**
+	 * Returns if this bullet is currently active. Bullets will not become
+	 * active until the turn after they are fired.
+	 * 
+	 * @return if the bullet is active.
+	 */
+	public boolean isActive();
 }

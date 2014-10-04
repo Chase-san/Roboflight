@@ -135,7 +135,7 @@ public class BattleRunner implements Runnable {
 			TurnStartedEventImpl tse = new TurnStartedEventImpl(tick);
 			for(RobotPeerImpl rp : robots) {
 				rp.setTime(tick);
-				
+
 				// run onTurnStart
 				if(rp.isEnabled() && rp.isAlive()) {
 					rp.addEvent(tse);
@@ -207,7 +207,7 @@ public class BattleRunner implements Runnable {
 						b.setActive(true);
 						bullets.add(b);
 					}
-	
+
 					// try and fire all missiles
 					MissileImpl m = rp.getMissileFired();
 					if(m != null) {
@@ -234,18 +234,6 @@ public class BattleRunner implements Runnable {
 		}
 	}
 
-	public void setFPS(double fps) {
-		this.fps = fps;
-	}
-
-	public void setPaused(boolean paused) {
-		this.paused = paused;
-	}
-
-	public void stop() {
-		running = false;
-	}
-	
 	private void runRobots() {
 		/* run all robots events */
 		ArrayList<Future<?>> future = new ArrayList<Future<?>>();
@@ -274,6 +262,18 @@ public class BattleRunner implements Runnable {
 		for(RobotPeerImpl rp : robots) {
 			rp.clearQueue();
 		}
+	}
+
+	public void setFPS(double fps) {
+		this.fps = fps;
+	}
+
+	public void setPaused(boolean paused) {
+		this.paused = paused;
+	}
+
+	public void stop() {
+		running = false;
 	}
 
 	private void updateBullets() {

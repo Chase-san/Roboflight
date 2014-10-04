@@ -24,11 +24,12 @@ package roboflight.events;
 
 /**
  * This interface defines an event that is generated when a robot dies.
+ * 
  * @author Robert Maupin
  */
 public interface RobotDeathEvent extends Event {
 	/**
-	 * @return The name of the robot that died. This might be your own robot. 
+	 * @return The name of the robot that died. This might be your own robot.
 	 */
 	public String getName();
 }

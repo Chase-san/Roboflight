@@ -24,6 +24,7 @@ package roboflight.events;
 
 /**
  * This interface defines an event that is the base of all other events.
+ * 
  * @author Robert Maupin
  */
 public interface Event {

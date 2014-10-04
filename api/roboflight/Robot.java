@@ -38,22 +38,49 @@ import roboflight.events.TurnStartedEvent;
  */
 public interface Robot {
 	/**
-	 * This method is called to supply information about another opponent.
-	 * It is called multiple times by the engine to inform you about multiple opponents.
-	 * @param e
+	 * This method is called at the start of a battle
 	 */
-	public void onRobotUpdate(RobotUpdateEvent e);
-	
+	public void onBattleStarted(BattleStartedEvent e);
+
+	/**
+	 * This method is called when the robot has been hit by a bullet.
+	 * 
+	 * @param e
+	 *            The BulletHitEvent set by the game.
+	 */
+	public void onBulletHit(BulletHitEvent e);
+
+	/**
+	 * This method is called when the robot has been hit by a bullet.
+	 * 
+	 * @param e
+	 *            The HitByBulletEvent set by the game.
+	 */
+	public void onHitByBullet(HitByBulletEvent e);
+
 	/**
 	 * This method is called to supply information about a missile.
 	 * 
 	 */
 	public void onMissileUpdate(MissileUpdateEvent e);
-	
+
 	/**
-	 * This method is called at the start of a battle
+	 * This method is called when the robot dies. May include this robot as
+	 * well.
+	 * 
+	 * @param e
+	 *            The RobotDeathEvent set by the game.
 	 */
-	public void onBattleStarted(BattleStartedEvent e);
+	public void onRobotDeath(RobotDeathEvent e);
+
+	/**
+	 * This method is called to supply information about another opponent. It is
+	 * called multiple times by the engine to inform you about multiple
+	 * opponents.
+	 * 
+	 * @param e
+	 */
+	public void onRobotUpdate(RobotUpdateEvent e);
 
 	/**
 	 * This method is called at the end of a turn.
@@ -64,29 +91,14 @@ public interface Robot {
 	 * This method is called at the start of a turn.
 	 */
 	public void onTurnStarted(TurnStartedEvent e);
-	
+
 	/**
-	 * Used to set the RobotPeer for this robot. There shouldn't be a need to call this method yourself.
-	 * @param peer The RobotPeer set by the game
+	 * Used to set the RobotPeer for this robot. There shouldn't be a need to
+	 * call this method yourself.
+	 * 
+	 * @param peer
+	 *            The RobotPeer set by the game
 	 */
 	public void setRobotPeer(RobotPeer peer);
-	
-	/**
-	 * This method is called when the robot has been hit by a bullet.
-	 * @param e The HitByBulletEvent set by the game.
-	 */
-	public void onHitByBullet(HitByBulletEvent e);
-	
-	/**
-	 * This method is called when the robot has been hit by a bullet.
-	 * @param e The BulletHitEvent set by the game.
-	 */
-	public void onBulletHit(BulletHitEvent e);
-	
-	/**
-	 * This method is called when the robot dies. May include this robot as well.
-	 * @param e The RobotDeathEvent set by the game.
-	 */
-	public void onRobotDeath(RobotDeathEvent e);
-	
+
 }

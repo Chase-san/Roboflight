@@ -35,28 +35,53 @@ import org.csdgn.rf.gui.MainWindow;
 
 /**
  * The Main Roboflight class.
+ * 
  * @author Robert Maupin
- *
+ * 
  */
 public class Roboflight {
 	public static final String ARTIFACT_NAME = "Roboflight";
 	public static final String ARTIFACT_VERSION = "MS1";
 	public static final String ARTIFACT_TITLE = Roboflight.ARTIFACT_NAME + " " + Roboflight.ARTIFACT_VERSION;
-	
+
+	private static void addSoftwareLibrary(File file) throws Exception {
+		Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { URL.class });
+		method.setAccessible(true);
+		method.invoke(ClassLoader.getSystemClassLoader(), new Object[] { file.toURI().toURL() });
+	}
+
+	public static boolean isDevelopmentEnvironment() {
+		if(System.getenv("eclipse") == null) {
+			return false;
+		}
+		return true;
+	}
+
+	private static void loadLibraries() throws Exception {
+		// load all software libraries
+		for(File file : new File("lib").listFiles()) {
+			if(!file.getName().endsWith("jar")) {
+				continue;
+			}
+			addSoftwareLibrary(file);
+		}
+	}
+
 	public static void main(String[] args) throws Exception {
 		try {
 			Locale.setDefault(Locale.US);
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch(Exception e) { /* Failure is unimportant. */ }
-		
+		} catch(Exception e) { /* Failure is unimportant. */
+		}
+
 		if(!isDevelopmentEnvironment()) {
-			//We only need to manually load the libraries if we are not
-			//in development, as the development system takes care of that.
+			// We only need to manually load the libraries if we are not
+			// in development, as the development system takes care of that.
 			loadLibraries();
 		}
-		
+
 		final Engine engine = new Engine();
-		
+
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -66,33 +91,11 @@ public class Roboflight {
 				window.start();
 			}
 		});
-		
+
 		try {
 			Thread.sleep(Long.MAX_VALUE);
 		} catch(InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public static boolean isDevelopmentEnvironment() {
-		if(System.getenv("eclipse") == null) {
-			return false;
-		}
-		return true;
-	}
-	
-	private static void loadLibraries() throws Exception {
-		//load all software libraries
-		for(File file : new File("lib").listFiles()) {
-			if(!file.getName().endsWith("jar"))
-				continue;
-			addSoftwareLibrary(file);
-		}
-	}
-	
-	private static void addSoftwareLibrary(File file) throws Exception {
-	    Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
-	    method.setAccessible(true);
-	    method.invoke(ClassLoader.getSystemClassLoader(), new Object[]{file.toURI().toURL()});
 	}
 }

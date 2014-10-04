@@ -33,24 +33,24 @@ import roboflight.Robot;
 
 /**
  * This class is responsible for running and managing battles.
+ * 
  * @author Robert Maupin
- *
+ * 
  */
 public class Engine {
-	
+
 	private final Executor battleExecutor;
 	private BattleRunner current;
 	private RobotDatabase database;
-	
+
 	public Engine() {
-		//test directory
+		// test directory
 		database = new RobotDatabase();
-		
+
 		database.addDirectory("robots");
-		
+
 		database.rebuildDatabase();
-		
-		
+
 		battleExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable r) {
@@ -60,49 +60,50 @@ public class Engine {
 			}
 		});
 	}
-	
+
+	public BattleRunner getCurrentBattle() {
+		return current;
+	}
+
 	public RobotDatabase getDatabase() {
 		return database;
 	}
-	
+
 	public void startBattle(ClassInfo[] classes) {
 		Robot[] robots = new Robot[classes.length];
-		
-		//load robots
-		for(int i=0;i<classes.length;++i) {
+
+		// load robots
+		for(int i = 0; i < classes.length; ++i) {
 			try {
 				robots[i] = database.createRobotInstance(classes[i]);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		startBattle(robots);
 	}
-	
+
 	public void startBattle(Robot[] robots) {
 		stopCurrentBattle();
 		current = BattleRunner.create(robots);
 		battleExecutor.execute(current);
 	}
-	
+
 	public void stopCurrentBattle() {
 		if(current != null) {
-			//shut it down to stop it quickly
+			// shut it down to stop it quickly
 			current.setFPS(BattleRunner.START_FPS);
-			
+
 			current.stop();
-			
-			//unpause it (or it will never stop)
-			if(current.isPaused())
+
+			// unpause it (or it will never stop)
+			if(current.isPaused()) {
 				current.setPaused(false);
-			
+			}
+
 			current = null;
 		}
 	}
-	
-	public BattleRunner getCurrentBattle() {
-		return current;
-	}
-	
+
 }

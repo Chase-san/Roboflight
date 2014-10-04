@@ -26,31 +26,36 @@ import roboflight.util.Vector;
 
 /**
  * This interface defines an event that is generated when a missile is updated.
+ * 
  * @author Robert Maupin
  */
 public interface MissileUpdateEvent extends Event {
 	/**
 	 * This method returns the owner of the missile.
+	 * 
 	 * @return The missiles owner.
 	 */
 	public String getName();
-	
-	/**
-	 * This method returns true if the missile belongs to this robot.
-	 * @return true, if the missile belongs to this robot.
-	 */
-	public boolean isOwned();
-	
+
 	/**
 	 * This method returns the position of the missile.
+	 * 
 	 * @return The missile's position.
 	 */
 	public Vector getPosition();
 
 	/**
 	 * This method returns the velocity of the missile.
+	 * 
 	 * @return The missile's velocity.
 	 */
 	public Vector getVelocity();
-	
+
+	/**
+	 * This method returns true if the missile belongs to this robot.
+	 * 
+	 * @return true, if the missile belongs to this robot.
+	 */
+	public boolean isOwned();
+
 }

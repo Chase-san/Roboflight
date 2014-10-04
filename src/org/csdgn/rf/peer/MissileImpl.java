@@ -16,25 +16,8 @@ public class MissileImpl implements Missile {
 		this.owner = owner;
 	}
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-
-	public void setArmed(boolean armed) {
-		this.armed = armed;
-	}
-
 	public RobotPeerImpl getOwner() {
 		return owner;
-	}
-
-	@Override
-	public boolean isActive() {
-		return active;
-	}
-
-	public boolean isArmed() {
-		return armed;
 	}
 
 	@Override
@@ -56,6 +39,23 @@ public class MissileImpl implements Missile {
 	}
 
 	@Override
+	public boolean isActive() {
+		return active;
+	}
+
+	public boolean isArmed() {
+		return armed;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public void setArmed(boolean armed) {
+		this.armed = armed;
+	}
+
+	@Override
 	public void setThrust(final Vector thrust) {
 		this.thrust.set(thrust);
 	}
@@ -64,9 +64,9 @@ public class MissileImpl implements Missile {
 		Vector thrust = this.thrust.clone();
 
 		// normalize thrust if we need to
-		if (thrust.lengthSq() > Rules.MISSILE_MAX_THRUST
-				* Rules.MISSILE_MAX_THRUST)
+		if(thrust.lengthSq() > Rules.MISSILE_MAX_THRUST * Rules.MISSILE_MAX_THRUST) {
 			thrust.normalize().scale(Rules.MISSILE_MAX_THRUST);
+		}
 
 		// update velocity
 		velocity.add(thrust);
@@ -75,9 +75,9 @@ public class MissileImpl implements Missile {
 		this.thrust.sub(thrust);
 
 		// normalize velocity if we need to
-		if (velocity.lengthSq() > Rules.MISSILE_MAX_VELOCITY
-				* Rules.MISSILE_MAX_VELOCITY)
+		if(velocity.lengthSq() > Rules.MISSILE_MAX_VELOCITY * Rules.MISSILE_MAX_VELOCITY) {
 			velocity.normalize().scale(Rules.MISSILE_MAX_VELOCITY);
+		}
 
 		// update position
 		position.add(velocity);
@@ -85,8 +85,9 @@ public class MissileImpl implements Missile {
 		// zero out thrust
 		thrust.set(0, 0, 0);
 
-		if (!Rules.isInBattlefield(position))
+		if(!Rules.isInBattlefield(position)) {
 			active = false;
+		}
 	}
 
 }

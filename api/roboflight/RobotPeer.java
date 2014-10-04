@@ -32,6 +32,11 @@ import roboflight.util.Vector;
  */
 public interface RobotPeer {
 	/**
+	 * Returns the current bullet heat.
+	 */
+	public double getBulletHeat();
+
+	/**
 	 * Gets your robots current energy.
 	 * 
 	 * @return Your robots energy.
@@ -90,10 +95,4 @@ public interface RobotPeer {
 	 *            Vector to apply to the robots movement.
 	 */
 	public void setThrust(Vector thrust);
-	
-	
-	/**
-	 * Returns the current bullet heat.
-	 */
-	public double getBulletHeat();
 }

@@ -73,7 +73,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	}
 
 	public BulletImpl getBulletFired() {
-		if (!fireBullet) {
+		if(!fireBullet) {
 			return null;
 		}
 		fireBullet = false;
@@ -97,7 +97,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	}
 
 	public MissileImpl getMissileFired() {
-		if (!fireMissile) {
+		if(!fireMissile) {
 			return null;
 		}
 		energy -= Rules.MISSILE_COST;
@@ -148,24 +148,24 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	@Override
 	public void run() {
 		/* run all events here! */
-		while (!eventQueue.isEmpty()) {
+		while(!eventQueue.isEmpty()) {
 			Event e = eventQueue.pop();
-			
-			if (e instanceof BattleStartedEvent) {
+
+			if(e instanceof BattleStartedEvent) {
 				robot.onBattleStarted((BattleStartedEvent) e);
-			} else if (e instanceof BulletHitEvent) {
+			} else if(e instanceof BulletHitEvent) {
 				robot.onBulletHit((BulletHitEvent) e);
-			} else if (e instanceof HitByBulletEvent) {
+			} else if(e instanceof HitByBulletEvent) {
 				robot.onHitByBullet((HitByBulletEvent) e);
-			} else if (e instanceof MissileUpdateEvent) {
+			} else if(e instanceof MissileUpdateEvent) {
 				robot.onMissileUpdate((MissileUpdateEvent) e);
-			} else if (e instanceof RobotDeathEvent) {
+			} else if(e instanceof RobotDeathEvent) {
 				robot.onRobotDeath((RobotDeathEvent) e);
-			} else if (e instanceof RobotUpdateEvent) {
+			} else if(e instanceof RobotUpdateEvent) {
 				robot.onRobotUpdate((RobotUpdateEvent) e);
-			} else if (e instanceof TurnEndedEvent) {
+			} else if(e instanceof TurnEndedEvent) {
 				robot.onTurnEnded((TurnEndedEvent) e);
-			} else if (e instanceof TurnStartedEvent) {
+			} else if(e instanceof TurnStartedEvent) {
 				robot.onTurnStarted((TurnStartedEvent) e);
 			}
 		}
@@ -173,36 +173,33 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 
 	public void setEnergy(final double energy) {
 		this.energy = energy;
-		if (this.energy < 0) {
+		if(this.energy < 0) {
 			this.energy = 0;
 		}
 	}
 
 	@Override
 	public final Bullet setFireBullet(final Vector target) {
-		if (!enabled || bulletHeat > 0 || energy < Rules.BULLET_COST
-				|| target.lengthSq() == 0) {
+		if(!enabled || bulletHeat > 0 || energy < Rules.BULLET_COST || target.lengthSq() == 0) {
 			return null;
 		}
 		fireBullet = true;
 		bullet = new BulletImpl(this);
 		bullet.getPositionVector().set(position);
-		bullet.getVelocityVector().set(target).normalize()
-				.scale(Rules.BULLET_VELOCITY);
+		bullet.getVelocityVector().set(target).normalize().scale(Rules.BULLET_VELOCITY);
 		return bullet;
 	}
 
 	@Override
 	public final Missile setFireMissile(final Vector target) {
-		if (!enabled || energy < Rules.MISSILE_COST || target.lengthSq() == 0) {
+		if(!enabled || energy < Rules.MISSILE_COST || target.lengthSq() == 0) {
 			return null;
 		}
 		fireMissile = true;
 
 		missile = new MissileImpl(this);
 		missile.getPositionVector().set(position);
-		missile.getVelocityVector().set(target).normalize()
-				.scale(Rules.MISSILE_FIRE_VELOCITY);
+		missile.getVelocityVector().set(target).normalize().scale(Rules.MISSILE_FIRE_VELOCITY);
 
 		return missile;
 	}
@@ -226,10 +223,9 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 
 	public void update() {
 		Vector thrust = this.thrust.clone();
-		if (enabled) {
+		if(enabled) {
 			// normalize thrust if we need to
-			if (thrust.lengthSq() > Rules.ROBOT_MAX_THRUST
-					* Rules.ROBOT_MAX_THRUST) {
+			if(thrust.lengthSq() > Rules.ROBOT_MAX_THRUST * Rules.ROBOT_MAX_THRUST) {
 				thrust.normalize().scale(Rules.ROBOT_MAX_THRUST);
 			}
 
@@ -240,12 +236,11 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 			this.thrust.set(0, 0, 0);
 		}
 		// normalize velocity if we need to
-		if (velocity.lengthSq() > Rules.ROBOT_MAX_VELOCITY
-				* Rules.ROBOT_MAX_VELOCITY) {
+		if(velocity.lengthSq() > Rules.ROBOT_MAX_VELOCITY * Rules.ROBOT_MAX_VELOCITY) {
 			velocity.normalize().scale(Rules.ROBOT_MAX_VELOCITY);
 		}
 
-		if (!Rules.isRobotInBattlefield(position.clone().add(velocity))) {
+		if(!Rules.isRobotInBattlefield(position.clone().add(velocity))) {
 			velocity.set(0, 0, 0);
 		}
 
@@ -254,7 +249,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		lastThrust.set(thrust);
 		// cool down our gun (bullet heat)
 		bulletHeat -= Rules.BULLET_COOLING_RATE;
-		if (bulletHeat < 0) {
+		if(bulletHeat < 0) {
 			bulletHeat = 0;
 		}
 	}

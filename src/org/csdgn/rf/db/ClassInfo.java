@@ -31,48 +31,27 @@ import java.util.HashMap;
 
 /**
  * A little basic class info package.
+ * 
  * @author Robert Maupin
  */
 public class ClassInfo {
-	public String thisName;
-	public String superName;
-	public String[] interfaceNames;
-	public HashMap<Integer,String> constants;
-	public int majorVersion;
-	public int minorVersion;
-	public int codeSize;
-	public boolean isPublic;
-	public boolean isAbstract;
-	public boolean isFinal;
-	public boolean isInterface;
-	public File parent;
-	
-	private ClassInfo() {
-		constants = new HashMap<Integer,String>();
-	}
-	
-	public String toString() {
-		return thisName.replace('/', '.');
-	}
-	
-	private static final int[] CONSTANT_POOL_BYTES = new int[]
-			{ 0, 0, 0, 4, 4, 8, 8, 2, 2, 4, 4, 4, 4 };
-	
 	public static ClassInfo getClassInfo(InputStream cis) throws IOException {
 		DataInputStream dis = new DataInputStream(new BufferedInputStream(cis));
 		int magic = dis.readInt();
-		if(magic != 0xCAFEBABE) return null;
-		
+		if(magic != 0xCAFEBABE) {
+			return null;
+		}
+
 		ClassInfo info = new ClassInfo();
 		info.minorVersion = dis.readUnsignedShort();
-		info.majorVersion = dis.readUnsignedShort(); 
-		
+		info.majorVersion = dis.readUnsignedShort();
+
 		int constant_pool_count = dis.readUnsignedShort();
 		int pool_index = 1; // <--- is not a typo
 		int code_index = -1;
 		while(pool_index < constant_pool_count) {
 			int tag = dis.readUnsignedByte();
-			//only save the strings, the other ones do not matter
+			// only save the strings, the other ones do not matter
 			if(tag == 1) {
 				int length = dis.readUnsignedShort();
 				byte[] data = new byte[length];
@@ -85,9 +64,11 @@ public class ClassInfo {
 			} else {
 				dis.skip(CONSTANT_POOL_BYTES[tag]);
 			}
-			
+
 			++pool_index;
-			if(tag == 5 || tag == 6) ++pool_index;
+			if(tag == 5 || tag == 6) {
+				++pool_index;
+			}
 		}
 		int flags = dis.readUnsignedShort();
 		info.isPublic = (flags & 0x1) != 0;
@@ -97,7 +78,7 @@ public class ClassInfo {
 		info.thisName = info.constants.get(dis.readUnsignedShort() + 1);
 		info.superName = info.constants.get(dis.readUnsignedShort() + 1);
 		info.interfaceNames = new String[dis.readUnsignedShort()];
-		for(int i=0;i<info.interfaceNames.length;++i) {
+		for(int i = 0; i < info.interfaceNames.length; ++i) {
 			info.interfaceNames[i] = info.constants.get(dis.readUnsignedShort() + 1);
 		}
 		// fields
@@ -110,7 +91,7 @@ public class ClassInfo {
 				dis.skip(dis.readInt() & 0x7FFFFFFF);
 			}
 		}
-		
+
 		// methods !!! (will always be at least 1)
 		int mcount = dis.readUnsignedShort();
 		while(mcount-- > 0) {
@@ -128,7 +109,32 @@ public class ClassInfo {
 				}
 			}
 		}
-		
+
 		return info;
+	}
+
+	public String thisName;
+	public String superName;
+	public String[] interfaceNames;
+	public HashMap<Integer, String> constants;
+	public int majorVersion;
+	public int minorVersion;
+	public int codeSize;
+	public boolean isPublic;
+	public boolean isAbstract;
+	public boolean isFinal;
+	public boolean isInterface;
+
+	public File parent;
+
+	private static final int[] CONSTANT_POOL_BYTES = new int[] { 0, 0, 0, 4, 4, 8, 8, 2, 2, 4, 4, 4, 4 };
+
+	private ClassInfo() {
+		constants = new HashMap<Integer, String>();
+	}
+
+	@Override
+	public String toString() {
+		return thisName.replace('/', '.');
 	}
 }

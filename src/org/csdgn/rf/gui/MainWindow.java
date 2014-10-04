@@ -148,6 +148,7 @@ public class MainWindow extends JFrame {
 
 		btnPause = new JButton("Pause");
 		btnPause.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				BattleRunner runner = engine.getCurrentBattle();
 				if(runner != null) {
@@ -167,6 +168,7 @@ public class MainWindow extends JFrame {
 
 		btnStop = new JButton("Stop");
 		btnStop.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				btnPause.setEnabled(false);
 				btnStop.setEnabled(false);
@@ -195,6 +197,7 @@ public class MainWindow extends JFrame {
 		fpsSlider.setValue(20);
 		fpsSlider.setMinorTickSpacing(2);
 		fpsSlider.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent e) {
 				if(!fpsSlider.getValueIsAdjusting()) {
 					BattleRunner battle = engine.getCurrentBattle();
@@ -244,11 +247,12 @@ public class MainWindow extends JFrame {
 	@Override
 	public void dispose() {
 		display.dispose();
-		while(display.isCreated())
+		while(display.isCreated()) {
 			try {
 				Thread.sleep(100);
 			} catch(final InterruptedException e) {
 			}
+		}
 		stop();
 		super.dispose();
 		System.exit(0);
@@ -261,6 +265,34 @@ public class MainWindow extends JFrame {
 		stats.clear();
 
 		RepaintManager.currentManager(sidePanel).markCompletelyDirty(sidePanel);
+	}
+
+	public void setEngine(final Engine engine) {
+		// now pass it right on along to the display
+		this.engine = engine;
+		display.setEngine(engine);
+		dialog.initialize(engine);
+	}
+
+	public void start() {
+		stop();
+		timer = new Timer("GLUpdateThread", true);
+		timer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				BattleRunner battle = engine.getCurrentBattle();
+				if(battle != null) {
+					List<RobotPeerImpl> list = battle.getRobotPeers();
+					for(int i = 0; i < stats.size(); ++i) {
+						RobotPeerImpl robot = list.get(i);
+						stats.get(i).setText(
+								String.format("<html>%c: %s<br>Energy: %.1f</html>", 0x41 + i, robot.getName(),
+										robot.getEnergy()));
+					}
+				}
+				display.update();
+			}
+		}, 100, 50);
 	}
 
 	public void startBattle() {
@@ -291,34 +323,6 @@ public class MainWindow extends JFrame {
 
 		engine.startBattle(robots);
 		// stats
-	}
-
-	public void setEngine(final Engine engine) {
-		// now pass it right on along to the display
-		this.engine = engine;
-		display.setEngine(engine);
-		dialog.initialize(engine);
-	}
-
-	public void start() {
-		stop();
-		timer = new Timer("GLUpdateThread", true);
-		timer.scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run() {
-				BattleRunner battle = engine.getCurrentBattle();
-				if(battle != null) {
-					List<RobotPeerImpl> list = battle.getRobotPeers();
-					for(int i = 0; i < stats.size(); ++i) {
-						RobotPeerImpl robot = list.get(i);
-						stats.get(i).setText(
-								String.format("<html>%c: %s<br>Energy: %.1f</html>", 0x41 + i, robot.getName(),
-										robot.getEnergy()));
-					}
-				}
-				display.update();
-			}
-		}, 100, 50);
 	}
 
 	public void stop() {

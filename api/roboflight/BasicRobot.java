@@ -34,8 +34,9 @@ import roboflight.util.Vector;
 
 /**
  * This is a simple extendable class that implements the Robot and RobotPeer.
+ * 
  * @author Robert Maupin
- *
+ * 
  */
 public class BasicRobot implements Robot, RobotPeer {
 	private RobotPeer peer;
@@ -83,7 +84,16 @@ public class BasicRobot implements Robot, RobotPeer {
 	}
 
 	@Override
+	public void onMissileUpdate(MissileUpdateEvent e) {
+
+	}
+
+	@Override
 	public void onRobotDeath(RobotDeathEvent e) {
+	}
+
+	@Override
+	public void onRobotUpdate(RobotUpdateEvent e) {
 	}
 
 	@Override
@@ -92,10 +102,6 @@ public class BasicRobot implements Robot, RobotPeer {
 
 	@Override
 	public void onTurnStarted(TurnStartedEvent e) {
-	}
-
-	@Override
-	public void onRobotUpdate(RobotUpdateEvent e) {
 	}
 
 	@Override
@@ -116,10 +122,5 @@ public class BasicRobot implements Robot, RobotPeer {
 	@Override
 	public void setThrust(Vector thrust) {
 		peer.setThrust(thrust);
-	}
-
-	@Override
-	public void onMissileUpdate(MissileUpdateEvent e) {
-		
 	}
 }

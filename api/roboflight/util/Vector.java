@@ -44,8 +44,7 @@ public class Vector implements Cloneable {
 	 * @return The cross product of vector a and b.
 	 */
 	public static final Vector cross(final Vector a, final Vector b) {
-		return new Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x
-				* b.y - a.y * b.x);
+		return new Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 	}
 
 	/**
@@ -58,8 +57,7 @@ public class Vector implements Cloneable {
 	 * @return the Euler distance
 	 */
 	public static final double distance(final Vector p, final Vector q) {
-		return Math.sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y)
-				+ (p.z - q.z) * (p.z - q.z));
+		return Math.sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y) + (p.z - q.z) * (p.z - q.z));
 	}
 
 	/**
@@ -72,8 +70,7 @@ public class Vector implements Cloneable {
 	 * @return the square of the Euler distance
 	 */
 	public static final double distanceSq(final Vector p, final Vector q) {
-		return (p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y)
-				+ (p.z - q.z) * (p.z - q.z);
+		return (p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y) + (p.z - q.z) * (p.z - q.z);
 	}
 
 	/**
@@ -172,8 +169,7 @@ public class Vector implements Cloneable {
 	 * @return The Euler distance to the given vector.
 	 */
 	public double distance(final Vector q) {
-		return Math.sqrt((x - q.x) * (x - q.x) + (y - q.y) * (y - q.y)
-				+ (z - q.z) * (z - q.z));
+		return Math.sqrt((x - q.x) * (x - q.x) + (y - q.y) * (y - q.y) + (z - q.z) * (z - q.z));
 	}
 
 	/**
@@ -185,8 +181,7 @@ public class Vector implements Cloneable {
 	 * @return The square of the Euler distance to the given vector.
 	 */
 	public double distanceSq(final Vector q) {
-		return (x - q.x) * (x - q.x) + (y - q.y) * (y - q.y) + (z - q.z)
-				* (z - q.z);
+		return (x - q.x) * (x - q.x) + (y - q.y) * (y - q.y) + (z - q.z) * (z - q.z);
 	}
 
 	/**
@@ -198,16 +193,6 @@ public class Vector implements Cloneable {
 	 */
 	public double dot(final Vector p) {
 		return x * p.x + y * p.y + z * p.z;
-	}
-
-	/**
-	 * Sets this vector to its unit vector.
-	 * 
-	 * @return This vector.
-	 */
-	public Vector normalize() {
-		scale(1.0 / length());
-		return this;
 	}
 
 	/**
@@ -228,6 +213,16 @@ public class Vector implements Cloneable {
 	 */
 	public double lengthSq() {
 		return x * x + y * y + z * z;
+	}
+
+	/**
+	 * Sets this vector to its unit vector.
+	 * 
+	 * @return This vector.
+	 */
+	public Vector normalize() {
+		scale(1.0 / length());
+		return this;
 	}
 
 	/**
@@ -271,9 +266,9 @@ public class Vector implements Cloneable {
 	 * @return This vector.
 	 */
 	public Vector set(final Vector vec) {
-		this.x = vec.x;
-		this.y = vec.y;
-		this.z = vec.z;
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
 		return this;
 	}
 
@@ -330,6 +325,7 @@ public class Vector implements Cloneable {
 	/**
 	 * Returns a string representation of this vector.
 	 */
+	@Override
 	public String toString() {
 		return String.format("<%f,%f,%f>", x, y, z);
 	}

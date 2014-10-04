@@ -22,7 +22,6 @@
  */
 package roboflight.util;
 
-
 /**
  * The basic rules class that defines things about the battle and the field.
  * 
@@ -34,7 +33,7 @@ public final class Rules {
 	public static final double BULLET_DAMAGE = 2;
 	public static final double BULLET_COST = 0.5;
 	public static final double BULLET_HEAT = 10;
-	public static final double BULLET_START_HEAT = BULLET_HEAT*5;
+	public static final double BULLET_START_HEAT = BULLET_HEAT * 5;
 	public static final double BULLET_ONHIT_GAIN = 2;
 	public static final double BULLET_VELOCITY = 20;
 	public static final double MISSILE_COST = 8;
@@ -54,8 +53,10 @@ public final class Rules {
 	}
 
 	public static final boolean isRobotInBattlefield(final Vector position) {
-		return position.lengthSq() < Rules.BATTLEFIELD_RADIUS * Rules.BATTLEFIELD_RADIUS - Rules.ROBOT_RADIUS * Rules.ROBOT_RADIUS;
+		return position.lengthSq() < Rules.BATTLEFIELD_RADIUS * Rules.BATTLEFIELD_RADIUS - Rules.ROBOT_RADIUS
+				* Rules.ROBOT_RADIUS;
 	}
 
-	private Rules() { }
+	private Rules() {
+	}
 }

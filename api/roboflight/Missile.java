@@ -31,24 +31,27 @@ import roboflight.util.Vector;
  */
 public interface Missile {
 	/**
-	 * Returns if this missile is currently active. Missiles
-	 * will not become active until the turn after they are fired.
-	 * @return if the bullet is active.
-	 */
-	public boolean isActive();
-	
-	/**
 	 * Gets the position of the missile.
+	 * 
 	 * @return the missiles position
 	 */
 	public Vector getPosition();
-	
+
 	/**
 	 * Gets the velocity of the missile.
+	 * 
 	 * @return the missiles velocity
 	 */
 	public Vector getVelocity();
-	
+
+	/**
+	 * Returns if this missile is currently active. Missiles will not become
+	 * active until the turn after they are fired.
+	 * 
+	 * @return if the bullet is active.
+	 */
+	public boolean isActive();
+
 	/**
 	 * Sets the thrust to use for the next update. This resets to 0 at the start
 	 * of every turn.

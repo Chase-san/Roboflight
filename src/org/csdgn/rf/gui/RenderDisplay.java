@@ -46,16 +46,15 @@ import roboflight.util.Rules;
 import roboflight.util.Vector;
 
 /**
- * This class is a mess and I know it.
- * This uses old style open gl rendering.
- * It should be updated to use a scene graph, shaders and such.
+ * This class is a mess and I know it. This uses old style open gl rendering. It
+ * should be updated to use a scene graph, shaders and such.
  * 
  * @author Robert Maupin
  * 
  */
 public class RenderDisplay extends Canvas {
 	private static final long serialVersionUID = 6222790311368212989L;
-	
+
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 600;
 	private static final float FOV = 70f;
@@ -66,7 +65,7 @@ public class RenderDisplay extends Canvas {
 	public static boolean DRAW_AXIS = true;
 	public static boolean DRAW_GRID = true;
 	public static boolean DRAW_ROBOT_LOCATORS = false;
-	
+
 	private boolean created = false;
 	private boolean dispose = false;
 	private boolean drag = false;
@@ -75,18 +74,18 @@ public class RenderDisplay extends Canvas {
 
 	private Engine engine;
 
-	//private TrueTypeFont font;
+	// private TrueTypeFont font;
 	private GLFontRenderer font;
 
 	public RenderDisplay() {
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		if (Beans.isDesignTime()) {
+		if(Beans.isDesignTime()) {
 			setBackground(java.awt.Color.BLACK);
 		} else {
 			try {
 				Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
 				Display.setParent(this);
-			} catch (final LWJGLException e) {
+			} catch(final LWJGLException e) {
 				e.printStackTrace();
 			}
 		}
@@ -116,7 +115,7 @@ public class RenderDisplay extends Canvas {
 	}
 
 	public void create() {
-		if (!created) {
+		if(!created) {
 			try {
 				Display.create();
 				// SETUP DISPLAY
@@ -124,8 +123,7 @@ public class RenderDisplay extends Canvas {
 				glMatrixMode(GL_PROJECTION);
 				glLoadIdentity();
 
-				GLU.gluPerspective(FOV, WIDTH / (float) HEIGHT, NEAR_CLIP,
-						FAR_CLIP);
+				GLU.gluPerspective(FOV, WIDTH / (float) HEIGHT, NEAR_CLIP, FAR_CLIP);
 				glMatrixMode(GL_MODELVIEW);
 				glLoadIdentity();
 
@@ -144,7 +142,7 @@ public class RenderDisplay extends Canvas {
 				created = true;
 
 				font = new GLFontRenderer(Font.decode("consolas 32"));
-			} catch (final LWJGLException e) {
+			} catch(final LWJGLException e) {
 				e.printStackTrace();
 			}
 		}
@@ -155,14 +153,23 @@ public class RenderDisplay extends Canvas {
 	}
 
 	private void doDispose() {
-		if (created) {
+		if(created) {
 			try {
 				font.dispose();
 				Display.destroy();
 				created = false;
-			} catch (final Exception e) {
+			} catch(final Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	private void drawAllMissiles(BattleRunner battle) {
+		// drawMissile
+		for(MissileImpl ms : battle.getMissiles()) {
+			Vector p = ms.getPosition().scale(1.0 / Rules.BATTLEFIELD_RADIUS);
+
+			drawMissile((float) p.x, (float) p.y, (float) p.z);
 		}
 	}
 
@@ -170,8 +177,8 @@ public class RenderDisplay extends Canvas {
 		// TODO sort robots based on distance to camera
 		// this is only required once we get robot colors in
 		int index = 0;
-		for (RobotPeerImpl rp : battle.getRobotPeers()) {
-			if (!rp.isAlive()) {
+		for(RobotPeerImpl rp : battle.getRobotPeers()) {
+			if(!rp.isAlive()) {
 				index++;
 				continue;
 			}
@@ -186,7 +193,7 @@ public class RenderDisplay extends Canvas {
 
 			glBegin(GL_LINES);
 			{
-				if (DRAW_ROBOT_LOCATORS) {
+				if(DRAW_ROBOT_LOCATORS) {
 					glColor3f(0.15f, 0.15f, 0.15f);
 
 					// draw grey leads, these extend outside the sphere
@@ -230,8 +237,8 @@ public class RenderDisplay extends Canvas {
 			glEnd();
 
 			// TODO move this to GUI rendering in 2D
-			//drawText((float) p.x, (float) p.y + 0.1f, (float) p.z, ""
-				//	+ (char) (0x41 + index++));
+			// drawText((float) p.x, (float) p.y + 0.1f, (float) p.z, ""
+			// + (char) (0x41 + index++));
 			drawChar((float) p.x, (float) p.y + 0.1f, (float) p.z, 0x41 + index++);
 		}
 	}
@@ -239,7 +246,7 @@ public class RenderDisplay extends Canvas {
 	private void drawAxis() {
 		glBegin(GL_LINES);
 		// if we are looking up, render Y first
-		if (camera.angleY <= 0) {
+		if(camera.angleY <= 0) {
 			// Y
 			glColor3f(0, 1, 0);
 			glVertex3f(0, 0, 0);
@@ -255,7 +262,7 @@ public class RenderDisplay extends Canvas {
 		glVertex3f(0, 0, AXIS_LENGTH);
 
 		// if we are looking down, render Y last
-		if (camera.angleY > 0) {
+		if(camera.angleY > 0) {
 			// Y
 			glColor3f(0, 1, 0);
 			glVertex3f(0, 0, 0);
@@ -267,12 +274,41 @@ public class RenderDisplay extends Canvas {
 	private void drawBullets(BattleRunner battle) {
 		// TODO allow special bullet colors
 		glColor3f(1, 1, 1);
-		for (BulletImpl b : battle.getBullets()) {
+		for(BulletImpl b : battle.getBullets()) {
 			glBegin(GL_POINTS);
 			Vector p = b.getPosition().scale(1.0 / Rules.BATTLEFIELD_RADIUS);
 			glVertex3d(p.x, p.y, p.z);
 			glEnd();
 		}
+	}
+
+	private void drawChar(float x, float y, float z, int chr) {
+		glPushMatrix();
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glTranslatef(x, y, z);
+
+		alignToCamera();
+		float scale = 1f / HEIGHT;
+		glScalef(scale, -scale, scale);
+
+		int width = font.width(chr) >> 1;
+		// int height = font.height(chr) >> 1;
+
+		glTranslatef(width, 0, 0);
+		glColor3f(1f, 1f, 1f);
+
+		font.draw(chr);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		glDisable(GL_BLEND);
+
+		glPopMatrix();
 	}
 
 	private void drawCircle(float x, float y, float z, float r, int segments) {
@@ -283,19 +319,19 @@ public class RenderDisplay extends Canvas {
 
 		glBegin(GL_LINE_LOOP);
 		double angle = Math.PI * 2 / segments;
-		for (int i = 0; i < segments; ++i) {
+		for(int i = 0; i < segments; ++i) {
 			glVertex3d(Math.sin(angle * i) * r, Math.cos(angle * i) * r, 0);
 		}
 		glEnd();
-		
+
 		glPopMatrix();
 	}
 
 	private void drawGrid() {
 		glColor3f(0.1f, 0.1f, 0.1f);
 		glBegin(GL_LINES);
-		for (float x = -1; x <= 1; x++) {
-			for (float y = -1; y <= 1; y++) {
+		for(float x = -1; x <= 1; x++) {
+			for(float y = -1; y <= 1; y++) {
 				glVertex3f(-1, x, y);
 				glVertex3f(1, x, y);
 
@@ -328,50 +364,10 @@ public class RenderDisplay extends Canvas {
 
 		glPopMatrix();
 	}
-	
-	private void drawAllMissiles(BattleRunner battle) {
-		//drawMissile
-		for(MissileImpl ms : battle.getMissiles()) {
-			Vector p = ms.getPosition().scale(1.0 / Rules.BATTLEFIELD_RADIUS);
-			
-			drawMissile((float)p.x,(float)p.y,(float)p.z);
-		}
-	}
 
 	private void drawRobot(float x, float y, float z) {
 		// TODO allow special robot colors
-		drawCircle(x, y, z,(float) (Rules.ROBOT_RADIUS / Rules.BATTLEFIELD_RADIUS), 8);
-	}
-	
-	private void drawChar(float x, float y, float z, int chr) {
-		glPushMatrix();
-
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		glTranslatef(x, y, z);
-		
-		
-		alignToCamera();
-		float scale = 1f / HEIGHT;
-		glScalef(scale, -scale, scale);
-		
-		int width = font.width(chr) >> 1;
-		//int height = font.height(chr) >> 1;
-		
-		glTranslatef(width, 0, 0);
-		glColor3f(1f,1f,1f);
-		
-		font.draw(chr);
-		
-		
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-		glDisable(GL_BLEND);
-
-		glPopMatrix();
+		drawCircle(x, y, z, (float) (Rules.ROBOT_RADIUS / Rules.BATTLEFIELD_RADIUS), 8);
 	}
 
 	public boolean isCreated() {
@@ -383,11 +379,11 @@ public class RenderDisplay extends Canvas {
 	}
 
 	public void update() {
-		if (dispose) {
+		if(dispose) {
 			doDispose();
 			return;
 		}
-		if (!isDisplayable()) {
+		if(!isDisplayable()) {
 			return;
 		}
 		create();
@@ -399,16 +395,16 @@ public class RenderDisplay extends Canvas {
 	private void updateCameraControl() {
 		final float SCALE = (float) (Math.PI / 4096);
 		int wheeld = Mouse.getDWheel();
-		if (Mouse.isButtonDown(0)) {
+		if(Mouse.isButtonDown(0)) {
 			int dx = Mouse.getDX();
 			int dy = Mouse.getDY();
-			if (Mouse.isButtonDown(1)) {
-				if (zoom) {
+			if(Mouse.isButtonDown(1)) {
+				if(zoom) {
 					camera.distance -= dy / 100f;
 				}
 				zoom = true;
 			} else {
-				if (drag) {
+				if(drag) {
 					camera.angleXZ -= dx * SCALE;
 					camera.angleY -= dy * SCALE;
 					camera.momentumXZ = -dx * SCALE;
@@ -416,7 +412,7 @@ public class RenderDisplay extends Canvas {
 				}
 				drag = true;
 			}
-		} else if (wheeld != 0) {
+		} else if(wheeld != 0) {
 			camera.distance -= wheeld / 960f;
 		} else {
 			drag = zoom = false;
@@ -424,7 +420,7 @@ public class RenderDisplay extends Canvas {
 	}
 
 	private void updateDisplay() {
-		if (!isDisplayable() || !created) {
+		if(!isDisplayable() || !created) {
 			return;
 		}
 
@@ -442,11 +438,13 @@ public class RenderDisplay extends Canvas {
 		camera.updateCamera();
 		GLU.gluLookAt(camera.x, camera.y, camera.z, 0, 0, 0, 0, 1, 0);
 
-		if (DRAW_GRID)
+		if(DRAW_GRID) {
 			drawGrid();
+		}
 
-		if (DRAW_AXIS)
+		if(DRAW_AXIS) {
 			drawAxis();
+		}
 
 		glColor3f(0.4f, 0.4f, 0.5f);
 
@@ -455,27 +453,27 @@ public class RenderDisplay extends Canvas {
 		float x = camera.distance;
 		x = .18666666f * x * x + -1.0233333f * x + 2.46f;
 		drawCircle(0, 0, 0, x, 64);
-		
 
 		BattleRunner battle = engine.getCurrentBattle();
 
-		if (battle != null)
+		if(battle != null) {
 			synchronized(battle) {
 				drawBullets(battle);
 				drawAllMissiles(battle);
 				drawAllRobots(battle);
 			}
+		}
 
-		
-		//TODO draw GUI
-		
+		// TODO draw GUI
+
 		glFlush();
 		glPopMatrix();
 	}
 
 	private void updateGL() {
-		if (!isDisplayable())
+		if(!isDisplayable()) {
 			return;
+		}
 		Display.update();
 	}
 }
