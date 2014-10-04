@@ -3,20 +3,22 @@ package org.csdgn.rf.peer;
 import roboflight.events.MissileUpdateEvent;
 import roboflight.util.Vector;
 
-public class MissileUpdateEventImpl implements MissileUpdateEvent {
+public class MissileUpdateEventImpl extends EventImpl implements
+		MissileUpdateEvent {
 	private final String name;
 	private final Vector velocity;
 	private final Vector position;
 	private final boolean owned;
-	
-	public MissileUpdateEventImpl(final String name, final Vector velocity, final Vector position,
-			final boolean owned) {
+
+	public MissileUpdateEventImpl(long time, final String name,
+			final Vector velocity, final Vector position, final boolean owned) {
+		super(time);
 		this.name = name;
 		this.velocity = velocity;
 		this.position = position;
 		this.owned = owned;
 	}
-	
+
 	@Override
 	public String getName() {
 		return name;

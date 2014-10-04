@@ -28,7 +28,6 @@ import java.util.concurrent.ThreadFactory;
 
 import org.csdgn.rf.db.ClassInfo;
 import org.csdgn.rf.db.RobotDatabase;
-import org.csdgn.rf.db.SandboxSecurityManager;
 
 import roboflight.Robot;
 
@@ -40,7 +39,6 @@ import roboflight.Robot;
 public class Engine {
 	
 	private final Executor battleExecutor;
-	private final SandboxSecurityManager security;
 	private BattleRunner current;
 	private RobotDatabase database;
 	
@@ -61,9 +59,6 @@ public class Engine {
 				return thread;
 			}
 		});
-		
-		security = new SandboxSecurityManager(this);
-		System.setSecurityManager(security);
 	}
 	
 	public RobotDatabase getDatabase() {

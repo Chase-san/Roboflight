@@ -22,10 +22,13 @@
  */
 package org.csdgn.rf.peer;
 
+import java.util.ArrayDeque;
+
 import roboflight.Bullet;
 import roboflight.Missile;
 import roboflight.Robot;
 import roboflight.RobotPeer;
+import roboflight.events.*;
 import roboflight.util.Rules;
 import roboflight.util.Vector;
 
@@ -35,11 +38,12 @@ import roboflight.util.Vector;
  * @author Robert Maupin
  * 
  */
-public class RobotPeerImpl implements RobotPeer {
+public class RobotPeerImpl implements RobotPeer, Runnable {
 	private final Vector thrust = new Vector();
 	private final Vector velocity = new Vector();
 	private final Vector position = new Vector();
 	private final Vector lastThrust = new Vector();
+	private final ArrayDeque<Event> eventQueue = new ArrayDeque<Event>();
 	private Robot robot;
 	private String name;
 	private double bulletHeat = Rules.BULLET_START_HEAT;
@@ -52,6 +56,14 @@ public class RobotPeerImpl implements RobotPeer {
 	private double energy = Rules.ROBOT_START_ENERGY;
 	private long time = 0;
 
+	public void addEvent(Event e) {
+		eventQueue.add(e);
+	}
+
+	public void clearQueue() {
+		eventQueue.clear();
+	}
+
 	public void disable() {
 		enabled = false;
 		energy = 0;
@@ -59,7 +71,9 @@ public class RobotPeerImpl implements RobotPeer {
 	}
 
 	public BulletImpl getBulletFired() {
-		if(!fireBullet) return null;
+		if (!fireBullet) {
+			return null;
+		}
 		fireBullet = false;
 		energy -= Rules.BULLET_COST;
 		bulletHeat += Rules.BULLET_HEAT;
@@ -81,7 +95,9 @@ public class RobotPeerImpl implements RobotPeer {
 	}
 
 	public MissileImpl getMissileFired() {
-		if(!fireMissile) return null;
+		if (!fireMissile) {
+			return null;
+		}
 		energy -= Rules.MISSILE_COST;
 		fireMissile = false;
 		return missile;
@@ -101,10 +117,6 @@ public class RobotPeerImpl implements RobotPeer {
 		return position;
 	}
 
-	public Robot getRobot() {
-		return robot;
-	}
-
 	@Override
 	public final long getTime() {
 		return time;
@@ -119,36 +131,77 @@ public class RobotPeerImpl implements RobotPeer {
 		return velocity;
 	}
 
+	public boolean isAlive() {
+		return alive;
+	}
+
 	public boolean isEnabled() {
 		return enabled;
 	}
 
+	public void kill() {
+		alive = false;
+	}
+
+	@Override
+	public void run() {
+		/* run all events here! */
+		while (!eventQueue.isEmpty()) {
+			Event e = eventQueue.pop();
+			
+			if (e instanceof BattleStartedEvent) {
+				robot.onBattleStarted((BattleStartedEvent) e);
+			} else if (e instanceof BulletHitEvent) {
+				robot.onBulletHit((BulletHitEvent) e);
+			} else if (e instanceof HitByBulletEvent) {
+				robot.onHitByBullet((HitByBulletEvent) e);
+			} else if (e instanceof MissileUpdateEvent) {
+				robot.onMissileUpdate((MissileUpdateEvent) e);
+			} else if (e instanceof RobotDeathEvent) {
+				robot.onRobotDeath((RobotDeathEvent) e);
+			} else if (e instanceof RobotUpdateEvent) {
+				robot.onRobotUpdate((RobotUpdateEvent) e);
+			} else if (e instanceof TurnEndedEvent) {
+				robot.onTurnEnded((TurnEndedEvent) e);
+			} else if (e instanceof TurnStartedEvent) {
+				robot.onTurnStarted((TurnStartedEvent) e);
+			}
+		}
+	}
+
 	public void setEnergy(final double energy) {
 		this.energy = energy;
-		if(this.energy < 0)
+		if (this.energy < 0) {
 			this.energy = 0;
+		}
 	}
 
 	@Override
 	public final Bullet setFireBullet(final Vector target) {
-		if(!enabled || bulletHeat > 0 || energy < Rules.BULLET_COST
-				|| target.lengthSq() == 0) return null;
+		if (!enabled || bulletHeat > 0 || energy < Rules.BULLET_COST
+				|| target.lengthSq() == 0) {
+			return null;
+		}
 		fireBullet = true;
 		bullet = new BulletImpl(this);
 		bullet.getPositionVector().set(position);
-		bullet.getVelocityVector().set(target).normalize().scale(Rules.BULLET_VELOCITY);
+		bullet.getVelocityVector().set(target).normalize()
+				.scale(Rules.BULLET_VELOCITY);
 		return bullet;
 	}
 
 	@Override
 	public final Missile setFireMissile(final Vector target) {
-		if(!enabled || energy < Rules.MISSILE_COST || target.lengthSq() == 0) return null;
+		if (!enabled || energy < Rules.MISSILE_COST || target.lengthSq() == 0) {
+			return null;
+		}
 		fireMissile = true;
-		
+
 		missile = new MissileImpl(this);
 		missile.getPositionVector().set(position);
-		missile.getVelocityVector().set(target).normalize().scale(Rules.MISSILE_FIRE_VELOCITY);
-		
+		missile.getVelocityVector().set(target).normalize()
+				.scale(Rules.MISSILE_FIRE_VELOCITY);
+
 		return missile;
 	}
 
@@ -168,40 +221,39 @@ public class RobotPeerImpl implements RobotPeer {
 	public void setTime(final long time) {
 		this.time = time;
 	}
-	
-	public void kill() {
-		alive = false;
-	}
-	
-	public boolean isAlive() {
-		return alive;
-	}
 
 	public void update() {
 		Vector thrust = this.thrust.clone();
-		if(enabled) {
+		if (enabled) {
 			// normalize thrust if we need to
-			if(thrust.lengthSq() > Rules.ROBOT_MAX_THRUST * Rules.ROBOT_MAX_THRUST)
+			if (thrust.lengthSq() > Rules.ROBOT_MAX_THRUST
+					* Rules.ROBOT_MAX_THRUST) {
 				thrust.normalize().scale(Rules.ROBOT_MAX_THRUST);
-			
+			}
+
 			// update velocity
 			velocity.add(thrust);
-			
+
 			// deplete thrust
-			this.thrust.set(0,0,0);
+			this.thrust.set(0, 0, 0);
 		}
 		// normalize velocity if we need to
-		if(velocity.lengthSq() > Rules.ROBOT_MAX_VELOCITY * Rules.ROBOT_MAX_VELOCITY)
+		if (velocity.lengthSq() > Rules.ROBOT_MAX_VELOCITY
+				* Rules.ROBOT_MAX_VELOCITY) {
 			velocity.normalize().scale(Rules.ROBOT_MAX_VELOCITY);
-		
-		if(!Rules.isRobotInBattlefield(position.clone().add(velocity)))
+		}
+
+		if (!Rules.isRobotInBattlefield(position.clone().add(velocity))) {
 			velocity.set(0, 0, 0);
-		
+		}
+
 		// update position
 		position.add(velocity);
 		lastThrust.set(thrust);
 		// cool down our gun (bullet heat)
 		bulletHeat -= Rules.BULLET_COOLING_RATE;
-		if(bulletHeat < 0) bulletHeat = 0;
+		if (bulletHeat < 0) {
+			bulletHeat = 0;
+		}
 	}
 }

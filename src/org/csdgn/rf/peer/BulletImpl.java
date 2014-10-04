@@ -17,7 +17,8 @@ public class BulletImpl implements Bullet {
 	}
 
 	public Vector getNextPosition() {
-		if(hasNextPosition) return nextPosition;
+		if (hasNextPosition)
+			return nextPosition;
 		hasNextPosition = true;
 		// we use line sphere intersection for collision
 		return nextPosition.set(position).add(velocity);
@@ -62,6 +63,7 @@ public class BulletImpl implements Bullet {
 		// update position
 		position.add(velocity);
 		hasNextPosition = false;
-		if(!Rules.isInBattlefield(getNextPosition())) active = false;
+		if (!Rules.isInBattlefield(getNextPosition()))
+			active = false;
 	}
 }

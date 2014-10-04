@@ -22,35 +22,11 @@
  */
 package roboflight.events;
 
-import roboflight.util.Vector;
-
 /**
- * This interface defines an event that is generated when a robot's information is updated.
- * 
+ * This interface defines an event that is the base of all other events.
  * @author Robert Maupin
  */
-public interface RobotUpdateEvent extends Event {
-	/**
-	 * This method returns the energy of the robot.
-	 * @return The robot's energy.
-	 */
-	public double getEnergy();
-
-	/**
-	 * This method returns the name of the robot.
-	 * @return The robot's name.
-	 */
-	public String getName();
-
-	/**
-	 * This method returns the position of the robot.
-	 * @return The robot's position.
-	 */
-	public Vector getPosition();
-
-	/**
-	 * This method returns the velocity of the robot.
-	 * @return The robot's velocity.
-	 */
-	public Vector getVelocity();
+public interface Event {
+	/** Turn of the event */
+	public long getTime();
 }

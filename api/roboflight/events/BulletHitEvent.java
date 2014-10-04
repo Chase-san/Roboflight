@@ -28,7 +28,7 @@ import roboflight.Bullet;
  * This interface defines an event that is generated when a bullet from your robot hits another robot.
  * @author Robert Maupin
  */
-public interface BulletHitEvent {
+public interface BulletHitEvent extends Event {
 	/**
 	 * The bullet object this event is about, and that collided with a robot.
 	 * @return the bullet that hit the robot

@@ -2,6 +2,7 @@ package sample;
 
 import roboflight.BasicRobot;
 import roboflight.events.RobotUpdateEvent;
+import roboflight.events.TurnEndedEvent;
 import roboflight.util.Vector;
 
 /**
@@ -22,7 +23,7 @@ public class Edge extends BasicRobot {
 	Vector thrust = new Vector(1,0,0);
 
 	@Override
-	public void onTurnEnded() {
+	public void onTurnEnded(TurnEndedEvent e) {
 		Vector p = getPosition();
 		setThrust(thrust);
 		

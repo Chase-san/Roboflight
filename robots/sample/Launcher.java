@@ -18,7 +18,9 @@ public class Launcher extends BasicRobot {
 	}
 	
 	public void onRobotUpdate(RobotUpdateEvent e) {
-		setFireBullet(e.getPosition().sub(getPosition()));
+		Vector pos = getPosition();
+		setFireBullet(e.getPosition().sub(pos));
+		
 		Vector p = getPosition();
 		
 		if(!fired) {

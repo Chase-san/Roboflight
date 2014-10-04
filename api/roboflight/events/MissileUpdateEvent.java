@@ -28,7 +28,7 @@ import roboflight.util.Vector;
  * This interface defines an event that is generated when a missile is updated.
  * @author Robert Maupin
  */
-public interface MissileUpdateEvent {
+public interface MissileUpdateEvent extends Event {
 	/**
 	 * This method returns the owner of the missile.
 	 * @return The missiles owner.

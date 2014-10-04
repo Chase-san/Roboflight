@@ -22,11 +22,14 @@
  */
 package roboflight;
 
+import roboflight.events.BattleStartedEvent;
 import roboflight.events.BulletHitEvent;
 import roboflight.events.HitByBulletEvent;
 import roboflight.events.MissileUpdateEvent;
 import roboflight.events.RobotDeathEvent;
 import roboflight.events.RobotUpdateEvent;
+import roboflight.events.TurnEndedEvent;
+import roboflight.events.TurnStartedEvent;
 import roboflight.util.Vector;
 
 /**
@@ -68,7 +71,7 @@ public class BasicRobot implements Robot, RobotPeer {
 	}
 
 	@Override
-	public void onBattleStarted() {
+	public void onBattleStarted(BattleStartedEvent e) {
 	}
 
 	@Override
@@ -84,11 +87,11 @@ public class BasicRobot implements Robot, RobotPeer {
 	}
 
 	@Override
-	public void onTurnEnded() {
+	public void onTurnEnded(TurnEndedEvent e) {
 	}
 
 	@Override
-	public void onTurnStarted() {
+	public void onTurnStarted(TurnStartedEvent e) {
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package sample;
 
 import roboflight.BasicRobot;
 import roboflight.events.RobotUpdateEvent;
+import roboflight.events.TurnEndedEvent;
 import roboflight.util.Vector;
 
 public class Random extends BasicRobot {
@@ -15,7 +16,7 @@ public class Random extends BasicRobot {
 	Vector thrust = new Vector(0,0,0);
 	
 	@Override
-	public void onTurnEnded() {
+	public void onTurnEnded(TurnEndedEvent e) {
 		//increase the previous thrust
 		//this is makes it so we are more likely to move then randomly
 		//thrust in all directions and not move at all

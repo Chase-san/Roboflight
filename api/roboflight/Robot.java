@@ -22,11 +22,14 @@
  */
 package roboflight;
 
+import roboflight.events.BattleStartedEvent;
 import roboflight.events.BulletHitEvent;
 import roboflight.events.HitByBulletEvent;
 import roboflight.events.MissileUpdateEvent;
 import roboflight.events.RobotDeathEvent;
 import roboflight.events.RobotUpdateEvent;
+import roboflight.events.TurnEndedEvent;
+import roboflight.events.TurnStartedEvent;
 
 /**
  * The main interface you need to extend to create a robot.
@@ -50,17 +53,17 @@ public interface Robot {
 	/**
 	 * This method is called at the start of a battle
 	 */
-	public void onBattleStarted();
+	public void onBattleStarted(BattleStartedEvent e);
 
 	/**
 	 * This method is called at the end of a turn.
 	 */
-	public void onTurnEnded();
+	public void onTurnEnded(TurnEndedEvent e);
 
 	/**
 	 * This method is called at the start of a turn.
 	 */
-	public void onTurnStarted();
+	public void onTurnStarted(TurnStartedEvent e);
 	
 	/**
 	 * Used to set the RobotPeer for this robot. There shouldn't be a need to call this method yourself.

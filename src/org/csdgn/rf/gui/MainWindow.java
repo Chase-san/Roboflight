@@ -98,12 +98,12 @@ public class MainWindow extends JFrame {
 		display = new RenderDisplay();
 		getContentPane().add(display, BorderLayout.CENTER);
 		sidePanel = new JPanel();
-		sidePanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+		sidePanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		getContentPane().add(sidePanel, BorderLayout.EAST);
 		sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
-		
+
 		dialog = new BattleDialog(this);
-		
+
 		{
 			final JCheckBox chckbxRobotLocators = new JCheckBox("Robot Locators");
 			chckbxRobotLocators.setSelected(RenderDisplay.DRAW_ROBOT_LOCATORS);
@@ -133,20 +133,19 @@ public class MainWindow extends JFrame {
 			});
 			sidePanel.add(chckbxGrid);
 		}
-		
+
 		getContentPane().add(createControlPanel(), BorderLayout.SOUTH);
-		
-		
+
 		setJMenuBar(createMenu());
 		pack();
 	}
-	
+
 	private JPanel createControlPanel() {
 		JPanel controlPanel = new JPanel();
-		
+
 		controlPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
 		controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
-		
+
 		btnPause = new JButton("Pause");
 		btnPause.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -165,27 +164,27 @@ public class MainWindow extends JFrame {
 		btnPause.setEnabled(false);
 		controlPanel.add(btnPause);
 		controlPanel.add(Box.createHorizontalStrut(4));
-		
+
 		btnStop = new JButton("Stop");
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnPause.setEnabled(false);
 				btnStop.setEnabled(false);
 				fpsSlider.setEnabled(false);
-				
+
 				resetSidebarStats();
-				
+
 				engine.stopCurrentBattle();
 			}
 		});
 		btnStop.setEnabled(false);
 		controlPanel.add(btnStop);
 		controlPanel.add(Box.createHorizontalStrut(4));
-		
+
 		JLabel lblFps = new JLabel("FPS");
 		lblFps.setEnabled(false);
 		controlPanel.add(lblFps);
-		
+
 		fpsSlider = new JSlider();
 		fpsSlider.setMaximum(100);
 		fpsSlider.setEnabled(false);
@@ -206,9 +205,9 @@ public class MainWindow extends JFrame {
 			}
 		});
 		controlPanel.add(fpsSlider);
-		
+
 		controlPanel.add(Box.createHorizontalGlue());
-		
+
 		return controlPanel;
 	}
 
@@ -248,53 +247,52 @@ public class MainWindow extends JFrame {
 		while(display.isCreated())
 			try {
 				Thread.sleep(100);
-			}
-			catch(final InterruptedException e) {
+			} catch(final InterruptedException e) {
 			}
 		stop();
 		super.dispose();
 		System.exit(0);
 	}
-	
+
 	public void resetSidebarStats() {
 		for(JLabel label : stats) {
 			sidePanel.remove(label);
 		}
 		stats.clear();
-		
+
 		RepaintManager.currentManager(sidePanel).markCompletelyDirty(sidePanel);
 	}
 
 	public void startBattle() {
 		resetSidebarStats();
-		
+
 		ClassInfo[] robots = dialog.getSelectedRobots();
-		
-		for(int i=0;i<robots.length;++i) {
+
+		for(int i = 0; i < robots.length; ++i) {
 			JLabel label = new JLabel("TEST");
-			
+
 			label.setBorder(BorderFactory.createEtchedBorder());
-			label.setText(String.format("<html>%c: %s<br>Energy: %.1f</html>", 0x41+i,
-					robots[i].toString(), Rules.ROBOT_START_ENERGY));
-			
+			label.setText(String.format("<html>%c: %s<br>Energy: %.1f</html>", 0x41 + i, robots[i].toString(),
+					Rules.ROBOT_START_ENERGY));
+
 			stats.add(label);
 			sidePanel.add(label);
 		}
-		
+
 		RepaintManager.currentManager(sidePanel).markCompletelyDirty(sidePanel);
-		
-		//fpsSlider
-		//btnPause
-		//btnStop
+
+		// fpsSlider
+		// btnPause
+		// btnStop
 		fpsSlider.setEnabled(true);
 		fpsSlider.setValue(BattleRunner.START_FPS);
 		btnPause.setEnabled(true);
 		btnStop.setEnabled(true);
-		
+
 		engine.startBattle(robots);
-		//stats
+		// stats
 	}
-	
+
 	public void setEngine(final Engine engine) {
 		// now pass it right on along to the display
 		this.engine = engine;
@@ -311,10 +309,11 @@ public class MainWindow extends JFrame {
 				BattleRunner battle = engine.getCurrentBattle();
 				if(battle != null) {
 					List<RobotPeerImpl> list = battle.getRobotPeers();
-					for(int i=0;i<stats.size();++i) {
+					for(int i = 0; i < stats.size(); ++i) {
 						RobotPeerImpl robot = list.get(i);
-						stats.get(i).setText(String.format("<html>%c: %s<br>Energy: %.1f</html>", 0x41+i,
-								robot.getName(), robot.getEnergy()));
+						stats.get(i).setText(
+								String.format("<html>%c: %s<br>Energy: %.1f</html>", 0x41 + i, robot.getName(),
+										robot.getEnergy()));
 					}
 				}
 				display.update();

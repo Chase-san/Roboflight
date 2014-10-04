@@ -3,13 +3,15 @@ package org.csdgn.rf.peer;
 import roboflight.events.RobotUpdateEvent;
 import roboflight.util.Vector;
 
-public class RobotUpdateEventImpl implements RobotUpdateEvent {
+public class RobotUpdateEventImpl extends EventImpl implements RobotUpdateEvent {
 	private final String name;
 	private final Vector velocity;
 	private final Vector position;
 	private final double energy;
 
-	public RobotUpdateEventImpl(final String name, final Vector velocity, final Vector position, final double energy) {
+	public RobotUpdateEventImpl(long time, final String name,
+			final Vector velocity, final Vector position, final double energy) {
+		super(time);
 		this.name = name;
 		this.velocity = velocity;
 		this.position = position;

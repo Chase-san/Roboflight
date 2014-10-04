@@ -3,15 +3,16 @@ package org.csdgn.rf.peer;
 import roboflight.Bullet;
 import roboflight.events.HitByBulletEvent;
 
-public class HitByBulletEventImpl implements HitByBulletEvent {
+public class HitByBulletEventImpl extends EventImpl implements HitByBulletEvent {
 	private final String name;
 	private final Bullet bullet;
-	
-	public HitByBulletEventImpl(Bullet bullet, String name) {
+
+	public HitByBulletEventImpl(long time, Bullet bullet, String name) {
+		super(time);
 		this.name = name;
 		this.bullet = bullet;
 	}
-	
+
 	@Override
 	public Bullet getBullet() {
 		return bullet;
