@@ -67,7 +67,7 @@ public class Edge extends BasicRobot {
 			// is over MAX_ROBOT_THRUST. However lets do it for completeness.
 			thrust.normalize();
 
-			//Apply the thrust, this will override the previous thrust that was set.
+			//Apply the thrust, this will override the previous thrust that was set above.
 			setThrust(thrust);
 		}
 	}

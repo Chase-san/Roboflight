@@ -40,7 +40,7 @@ import org.csdgn.rf.gui.MainWindow;
  */
 public class Roboflight {
 	public static final String ARTIFACT_NAME = "Roboflight";
-	public static final String ARTIFACT_VERSION = "0.4 MS1";
+	public static final String ARTIFACT_VERSION = "MS1";
 	public static final String ARTIFACT_TITLE = Roboflight.ARTIFACT_NAME + " " + Roboflight.ARTIFACT_VERSION;
 	
 	public static void main(String[] args) throws Exception {

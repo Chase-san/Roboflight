@@ -41,8 +41,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.TrueTypeFont;
 
 import roboflight.util.Rules;
 import roboflight.util.Vector;
@@ -77,7 +75,8 @@ public class RenderDisplay extends Canvas {
 
 	private Engine engine;
 
-	private TrueTypeFont font;
+	//private TrueTypeFont font;
+	private GLFontRenderer font;
 
 	public RenderDisplay() {
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -144,7 +143,7 @@ public class RenderDisplay extends Canvas {
 				glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 				created = true;
 
-				font = new TrueTypeFont(Font.decode("consolas 32"), true);
+				font = new GLFontRenderer(Font.decode("consolas 32"));
 			} catch (final LWJGLException e) {
 				e.printStackTrace();
 			}
@@ -158,6 +157,7 @@ public class RenderDisplay extends Canvas {
 	private void doDispose() {
 		if (created) {
 			try {
+				font.dispose();
 				Display.destroy();
 				created = false;
 			} catch (final Exception e) {
@@ -230,8 +230,9 @@ public class RenderDisplay extends Canvas {
 			glEnd();
 
 			// TODO move this to GUI rendering in 2D
-			drawText((float) p.x, (float) p.y + 0.1f, (float) p.z, ""
-					+ (char) (0x41 + index++));
+			//drawText((float) p.x, (float) p.y + 0.1f, (float) p.z, ""
+				//	+ (char) (0x41 + index++));
+			drawChar((float) p.x, (float) p.y + 0.1f, (float) p.z, 0x41 + index++);
 		}
 	}
 
@@ -341,8 +342,8 @@ public class RenderDisplay extends Canvas {
 		// TODO allow special robot colors
 		drawCircle(x, y, z,(float) (Rules.ROBOT_RADIUS / Rules.BATTLEFIELD_RADIUS), 8);
 	}
-
-	private void drawText(float x, float y, float z, String text) {
+	
+	private void drawChar(float x, float y, float z, int chr) {
 		glPushMatrix();
 
 		glEnable(GL_BLEND);
@@ -351,18 +352,21 @@ public class RenderDisplay extends Canvas {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		glTranslatef(x, y, z);
-
+		
+		
 		alignToCamera();
-
 		float scale = 1f / HEIGHT;
-
 		glScalef(scale, -scale, scale);
-
-		float width = font.getWidth(text) >> 1;
-		float height = font.getHeight(text) >> 1;
-
-		font.drawString(-width, -height, text, Color.white);
-
+		
+		int width = font.width(chr) >> 1;
+		//int height = font.height(chr) >> 1;
+		
+		glTranslatef(width, 0, 0);
+		glColor3f(1f,1f,1f);
+		
+		font.draw(chr);
+		
+		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		glDisable(GL_BLEND);
