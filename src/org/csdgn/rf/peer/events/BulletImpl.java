@@ -1,4 +1,6 @@
-package org.csdgn.rf.peer;
+package org.csdgn.rf.peer.events;
+
+import org.csdgn.rf.peer.RobotPeerImpl;
 
 import roboflight.Bullet;
 import roboflight.util.Rules;

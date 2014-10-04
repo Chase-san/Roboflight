@@ -30,17 +30,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.csdgn.rf.peer.BattleStartedEventImpl;
-import org.csdgn.rf.peer.BulletHitEventImpl;
-import org.csdgn.rf.peer.BulletImpl;
-import org.csdgn.rf.peer.HitByBulletEventImpl;
 import org.csdgn.rf.peer.MissileImpl;
-import org.csdgn.rf.peer.MissileUpdateEventImpl;
-import org.csdgn.rf.peer.RobotDeathEventImpl;
 import org.csdgn.rf.peer.RobotPeerImpl;
-import org.csdgn.rf.peer.RobotUpdateEventImpl;
-import org.csdgn.rf.peer.TurnEndedEventImpl;
-import org.csdgn.rf.peer.TurnStartedEventImpl;
+import org.csdgn.rf.peer.events.BattleStartedEventImpl;
+import org.csdgn.rf.peer.events.BulletHitEventImpl;
+import org.csdgn.rf.peer.events.BulletImpl;
+import org.csdgn.rf.peer.events.HitByBulletEventImpl;
+import org.csdgn.rf.peer.events.MissileUpdateEventImpl;
+import org.csdgn.rf.peer.events.RobotDeathEventImpl;
+import org.csdgn.rf.peer.events.RobotUpdateEventImpl;
+import org.csdgn.rf.peer.events.TurnEndedEventImpl;
+import org.csdgn.rf.peer.events.TurnStartedEventImpl;
 
 import roboflight.Robot;
 import roboflight.util.Rules;

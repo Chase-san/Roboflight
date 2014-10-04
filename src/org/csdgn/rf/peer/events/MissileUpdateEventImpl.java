@@ -1,4 +1,4 @@
-package org.csdgn.rf.peer;
+package org.csdgn.rf.peer.events;
 
 import roboflight.events.MissileUpdateEvent;
 import roboflight.util.Vector;

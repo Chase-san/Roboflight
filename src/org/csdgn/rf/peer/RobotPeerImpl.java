@@ -24,6 +24,8 @@ package org.csdgn.rf.peer;
 
 import java.util.ArrayDeque;
 
+import org.csdgn.rf.peer.events.BulletImpl;
+
 import roboflight.Bullet;
 import roboflight.Missile;
 import roboflight.Robot;

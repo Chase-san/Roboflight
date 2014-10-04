@@ -1,13 +1,13 @@
-package org.csdgn.rf.peer;
+package org.csdgn.rf.peer.events;
 
 import roboflight.Bullet;
-import roboflight.events.HitByBulletEvent;
+import roboflight.events.BulletHitEvent;
 
-public class HitByBulletEventImpl extends EventImpl implements HitByBulletEvent {
+public class BulletHitEventImpl extends EventImpl implements BulletHitEvent {
 	private final String name;
 	private final Bullet bullet;
 
-	public HitByBulletEventImpl(long time, Bullet bullet, String name) {
+	public BulletHitEventImpl(long time, Bullet bullet, String name) {
 		super(time);
 		this.name = name;
 		this.bullet = bullet;

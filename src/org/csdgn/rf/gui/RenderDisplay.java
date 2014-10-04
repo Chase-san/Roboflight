@@ -32,9 +32,9 @@ import java.nio.FloatBuffer;
 
 import org.csdgn.rf.BattleRunner;
 import org.csdgn.rf.Engine;
-import org.csdgn.rf.peer.BulletImpl;
 import org.csdgn.rf.peer.MissileImpl;
 import org.csdgn.rf.peer.RobotPeerImpl;
+import org.csdgn.rf.peer.events.BulletImpl;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
