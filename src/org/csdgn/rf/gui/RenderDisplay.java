@@ -175,10 +175,8 @@ public class RenderDisplay extends Canvas {
 	private void drawAllRobots(BattleRunner battle) {
 		// TODO sort robots based on distance to camera
 		// this is only required once we get robot colors in
-		int index = 0;
 		for(RobotPeerImpl rp : battle.getRobotPeers()) {
 			if(!rp.isAlive()) {
-				index++;
 				continue;
 			}
 
