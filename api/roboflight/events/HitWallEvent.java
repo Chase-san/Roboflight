@@ -32,5 +32,5 @@ public interface HitWallEvent extends Event {
 	/**
 	 * Returns the position at which the robot hit the wall.
 	 */
-	public Vector getWallHitPosition();
+	public Vector getPosition();
 }

@@ -13,7 +13,7 @@ public class HitWallEventImpl extends EventImpl implements HitWallEvent {
 	}
 
 	@Override
-	public Vector getWallHitPosition() {
+	public Vector getPosition() {
 		return hitPos.clone();
 	}
 }

@@ -27,8 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -46,8 +44,6 @@ import javax.swing.KeyStroke;
 import javax.swing.RepaintManager;
 import javax.swing.WindowConstants;
 
-import roboflight.util.Rules;
-
 import javax.swing.JButton;
 import javax.swing.JSlider;
 import javax.swing.border.EmptyBorder;
@@ -58,7 +54,6 @@ import org.csdgn.rf.BattleRunner;
 import org.csdgn.rf.Engine;
 import org.csdgn.rf.Roboflight;
 import org.csdgn.rf.db.ClassInfo;
-import org.csdgn.rf.peer.RobotPeerImpl;
 
 /**
  * Main display window for the game. By the way, I hate GUIs.
@@ -82,7 +77,6 @@ public class MainWindow extends JFrame {
 	private BattleDialog dialog;
 	private static final long serialVersionUID = 1510059463358895508L;
 	private final RenderDisplay display;
-	private ArrayList<JLabel> stats = new ArrayList<JLabel>();
 	private Engine engine;
 	private Timer timer;
 	private JPanel sidePanel;
@@ -174,8 +168,6 @@ public class MainWindow extends JFrame {
 				btnStop.setEnabled(false);
 				fpsSlider.setEnabled(false);
 
-				resetSidebarStats();
-
 				engine.stopCurrentBattle();
 			}
 		});
@@ -258,15 +250,6 @@ public class MainWindow extends JFrame {
 		System.exit(0);
 	}
 
-	public void resetSidebarStats() {
-		for(JLabel label : stats) {
-			sidePanel.remove(label);
-		}
-		stats.clear();
-
-		RepaintManager.currentManager(sidePanel).markCompletelyDirty(sidePanel);
-	}
-
 	public void setEngine(final Engine engine) {
 		// now pass it right on along to the display
 		this.engine = engine;
@@ -280,36 +263,14 @@ public class MainWindow extends JFrame {
 		timer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				BattleRunner battle = engine.getCurrentBattle();
-				if(battle != null) {
-					List<RobotPeerImpl> list = battle.getRobotPeers();
-					for(int i = 0; i < stats.size(); ++i) {
-						RobotPeerImpl robot = list.get(i);
-						stats.get(i).setText(
-								String.format("<html>%c: %s<br>Energy: %.1f</html>", 0x41 + i, robot.getName(),
-										robot.getEnergy()));
-					}
-				}
 				display.update();
 			}
 		}, 100, 50);
 	}
 
 	public void startBattle() {
-		resetSidebarStats();
 
 		ClassInfo[] robots = dialog.getSelectedRobots();
-
-		for(int i = 0; i < robots.length; ++i) {
-			JLabel label = new JLabel("TEST");
-
-			label.setBorder(BorderFactory.createEtchedBorder());
-			label.setText(String.format("<html>%c: %s<br>Energy: %.1f</html>", 0x41 + i, robots[i].toString(),
-					Rules.ROBOT_START_ENERGY));
-
-			stats.add(label);
-			sidePanel.add(label);
-		}
 
 		RepaintManager.currentManager(sidePanel).markCompletelyDirty(sidePanel);
 

@@ -74,7 +74,6 @@ public class RenderDisplay extends Canvas {
 
 	private Engine engine;
 
-	// private TrueTypeFont font;
 	private GLFontRenderer font;
 
 	public RenderDisplay() {
@@ -236,10 +235,8 @@ public class RenderDisplay extends Canvas {
 			}
 			glEnd();
 
-			// TODO move this to GUI rendering in 2D
-			// drawText((float) p.x, (float) p.y + 0.1f, (float) p.z, ""
-			// + (char) (0x41 + index++));
-			drawChar((float) p.x, (float) p.y + 0.1f, (float) p.z, 0x41 + index++);
+			drawString((float)p.x, (float) p.y + 0.15f, (float) p.z, String.format("%.1f", rp.getEnergy()));
+			drawString((float)p.x, (float) p.y + 0.1f, (float) p.z, rp.getName());
 		}
 	}
 
@@ -281,8 +278,8 @@ public class RenderDisplay extends Canvas {
 			glEnd();
 		}
 	}
-
-	private void drawChar(float x, float y, float z, int chr) {
+	
+	private void drawString(float x, float y, float z, String str) {
 		glPushMatrix();
 
 		glEnable(GL_BLEND);
@@ -296,13 +293,12 @@ public class RenderDisplay extends Canvas {
 		float scale = 1f / HEIGHT;
 		glScalef(scale, -scale, scale);
 
-		int width = font.width(chr) >> 1;
-		// int height = font.height(chr) >> 1;
+		int width = font.width(str) >> 1;
 
-		glTranslatef(width, 0, 0);
+		glTranslatef(-width, 0, 0);
 		glColor3f(1f, 1f, 1f);
 
-		font.draw(chr);
+		font.draw(str);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
