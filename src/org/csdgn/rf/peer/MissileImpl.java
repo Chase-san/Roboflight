@@ -105,8 +105,8 @@ public class MissileImpl implements Missile {
 		// update position
 		position.add(velocity);
 
-		// zero out thrust
-		this.thrust.set(0, 0, 0);
+		// deplete thrust
+		this.thrust.sub(thrust);
 
 		if(!Rules.isInBattlefield(position)) {
 			active = false;

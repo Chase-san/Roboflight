@@ -259,7 +259,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 			velocity.add(thrust);
 
 			// deplete thrust
-			this.thrust.set(0, 0, 0);
+			this.thrust.sub(thrust);
 		}
 		// normalize velocity if we need to
 		if(velocity.lengthSq() > Rules.ROBOT_MAX_VELOCITY * Rules.ROBOT_MAX_VELOCITY) {
