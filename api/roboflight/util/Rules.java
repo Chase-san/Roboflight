@@ -38,7 +38,7 @@ public final class Rules {
 	public static final double BULLET_VELOCITY = 20;
 	public static final double MISSILE_COST = 8;
 	public static final double MISSILE_DAMAGE = 16;
-	public static final double MISSILE_ONHIT_GAIN = 12;
+	public static final double MISSILE_ONHIT_GAIN = 16;
 	public static final double MISSILE_RADIUS = 10;
 	public static final double MISSILE_MAX_THRUST = 0.4;
 	public static final double MISSILE_MAX_VELOCITY = 15;

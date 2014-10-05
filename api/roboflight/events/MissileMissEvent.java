@@ -22,26 +22,19 @@
  */
 package roboflight.events;
 
-import roboflight.Bullet;
+import roboflight.Missile;
 
 /**
- * This interface defines an event that is generated when a bullet from a
- * robot hits another robot.
+ * This interface defines an event that is generated when a missile from a
+ * robot misses by hitting a wall.
  * 
  * @author Robert Maupin
  */
-public interface BulletHitEvent extends Event {
+public interface MissileMissEvent extends Event {
 	/**
-	 * The bullet object this event is about, and that collided with a robot.
+	 * The missile object that missed.
 	 * 
-	 * @return the bullet that hit the robot
+	 * @return the missile that missed.
 	 */
-	public Bullet getBullet();
-
-	/**
-	 * This method returns the name of the robot that was hit by a bullet
-	 * 
-	 * @return the name of the robot that was hit by a bullet.
-	 */
-	public String getName();
+	public Missile getMissile();
 }

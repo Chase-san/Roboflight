@@ -24,8 +24,6 @@ package org.csdgn.rf.peer;
 
 import java.util.ArrayDeque;
 
-import org.csdgn.rf.peer.events.BulletImpl;
-
 import roboflight.Bullet;
 import roboflight.Missile;
 import roboflight.Robot;
@@ -55,6 +53,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	private boolean fireMissile = false;
 	private boolean alive = true;
 	private boolean enabled = true;
+	private boolean hitWall = false;
 	private double energy = Rules.ROBOT_START_ENERGY;
 	private long time = 0;
 
@@ -70,6 +69,18 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		enabled = false;
 		energy = 0;
 		thrust.set(0, 0, 0);
+	}
+	
+	public boolean isFiringBullet() {
+		return fireBullet;
+	}
+	
+	public boolean isFiringMissile() {
+		return fireMissile;
+	}
+	
+	public boolean didHitWall() {
+		return hitWall;
 	}
 
 	public BulletImpl getBulletFired() {
@@ -167,6 +178,14 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 				robot.onTurnEnded((TurnEndedEvent) e);
 			} else if(e instanceof TurnStartedEvent) {
 				robot.onTurnStarted((TurnStartedEvent) e);
+			} else if(e instanceof HitWallEvent) {
+				robot.onHitWall((HitWallEvent)e);
+			} else if(e instanceof HitByMissileEvent) {
+				robot.onHitByMissile((HitByMissileEvent)e);
+			} else if(e instanceof MissileHitEvent) {
+				robot.onMissileHit((MissileHitEvent)e);
+			} else if(e instanceof MissileMissEvent) {
+				robot.onMissileMiss((MissileMissEvent)e);
 			}
 		}
 	}
@@ -239,9 +258,10 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		if(velocity.lengthSq() > Rules.ROBOT_MAX_VELOCITY * Rules.ROBOT_MAX_VELOCITY) {
 			velocity.normalize().scale(Rules.ROBOT_MAX_VELOCITY);
 		}
-
+		hitWall = false;
 		if(!Rules.isRobotInBattlefield(position.clone().add(velocity))) {
 			velocity.set(0, 0, 0);
+			hitWall = true;
 		}
 
 		// update position

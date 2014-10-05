@@ -83,6 +83,10 @@ public class MissileImpl implements Missile {
 	}
 
 	public void update() {
+		if(!active) {
+			return;
+		}
+		
 		Vector thrust = this.thrust.clone();
 
 		// normalize thrust if we need to
@@ -93,9 +97,6 @@ public class MissileImpl implements Missile {
 		// update velocity
 		velocity.add(thrust);
 
-		// deplete thrust
-		this.thrust.sub(thrust);
-
 		// normalize velocity if we need to
 		if(velocity.lengthSq() > Rules.MISSILE_MAX_VELOCITY * Rules.MISSILE_MAX_VELOCITY) {
 			velocity.normalize().scale(Rules.MISSILE_MAX_VELOCITY);
@@ -105,7 +106,7 @@ public class MissileImpl implements Missile {
 		position.add(velocity);
 
 		// zero out thrust
-		thrust.set(0, 0, 0);
+		this.thrust.set(0, 0, 0);
 
 		if(!Rules.isInBattlefield(position)) {
 			active = false;

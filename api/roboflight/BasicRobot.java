@@ -24,7 +24,12 @@ package roboflight;
 
 import roboflight.events.BattleStartedEvent;
 import roboflight.events.BulletHitEvent;
+import roboflight.events.BulletMissEvent;
 import roboflight.events.HitByBulletEvent;
+import roboflight.events.HitByMissileEvent;
+import roboflight.events.HitWallEvent;
+import roboflight.events.MissileHitEvent;
+import roboflight.events.MissileMissEvent;
 import roboflight.events.MissileUpdateEvent;
 import roboflight.events.RobotDeathEvent;
 import roboflight.events.RobotUpdateEvent;
@@ -80,7 +85,27 @@ public class BasicRobot implements Robot, RobotPeer {
 	}
 
 	@Override
+	public void onBulletMiss(BulletMissEvent e) {
+	}
+
+	@Override
 	public void onHitByBullet(HitByBulletEvent e) {
+	}
+
+	@Override
+	public void onHitByMissile(HitByMissileEvent e) {
+	}
+
+	@Override
+	public void onHitWall(HitWallEvent e) {
+	}
+
+	@Override
+	public void onMissileHit(MissileHitEvent e) {
+	}
+
+	@Override
+	public void onMissileMiss(MissileMissEvent e) {
 	}
 
 	@Override
@@ -123,4 +148,5 @@ public class BasicRobot implements Robot, RobotPeer {
 	public void setThrust(Vector thrust) {
 		peer.setThrust(thrust);
 	}
+
 }

@@ -22,26 +22,15 @@
  */
 package roboflight.events;
 
-import roboflight.Bullet;
+import roboflight.util.Vector;
 
 /**
- * This interface defines an event that is generated when a bullet from a
- * robot hits another robot.
- * 
+ * This event fires when your robot hits the outer wall.
  * @author Robert Maupin
  */
-public interface BulletHitEvent extends Event {
+public interface HitWallEvent extends Event {
 	/**
-	 * The bullet object this event is about, and that collided with a robot.
-	 * 
-	 * @return the bullet that hit the robot
+	 * Returns the position at which the robot hit the wall.
 	 */
-	public Bullet getBullet();
-
-	/**
-	 * This method returns the name of the robot that was hit by a bullet
-	 * 
-	 * @return the name of the robot that was hit by a bullet.
-	 */
-	public String getName();
+	public Vector getWallHitPosition();
 }

@@ -30,12 +30,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.csdgn.rf.peer.BulletImpl;
 import org.csdgn.rf.peer.MissileImpl;
 import org.csdgn.rf.peer.RobotPeerImpl;
 import org.csdgn.rf.peer.events.BattleStartedEventImpl;
 import org.csdgn.rf.peer.events.BulletHitEventImpl;
-import org.csdgn.rf.peer.events.BulletImpl;
+import org.csdgn.rf.peer.events.BulletMissEventImpl;
 import org.csdgn.rf.peer.events.HitByBulletEventImpl;
+import org.csdgn.rf.peer.events.HitByMissileEventImpl;
+import org.csdgn.rf.peer.events.HitWallEventImpl;
+import org.csdgn.rf.peer.events.MissileHitEventImpl;
+import org.csdgn.rf.peer.events.MissileMissEventImpl;
 import org.csdgn.rf.peer.events.MissileUpdateEventImpl;
 import org.csdgn.rf.peer.events.RobotDeathEventImpl;
 import org.csdgn.rf.peer.events.RobotUpdateEventImpl;
@@ -141,32 +146,38 @@ public class BattleRunner implements Runnable {
 					rp.addEvent(tse);
 				}
 			}
+			
+			/* hit wall */
+			for(RobotPeerImpl rp : robots) {
+				if(rp.didHitWall()) {
+					HitWallEventImpl hwe = new HitWallEventImpl(tick,rp.getPosition());
+					rp.addEvent(hwe);
+				}
+			}
+			
 
 			synchronized(this) {
 				updateBullets();
 				updateMissiles();
 			}
 
-			// create a randomized list for the updates, makes things a
-			// little more fair
-			List<RobotPeerImpl> robots2 = new ArrayList<RobotPeerImpl>(robots);
-			Collections.shuffle(robots2);
 
-			// We don't shuffle it for every separate robot, that would be
-			// annoying.
-
-			// run update
+			/* send update of other robots to robot */
 			for(RobotPeerImpl rp : robots) {
 				if(!rp.isEnabled() || !rp.isAlive()) {
 					continue;
 				}
-
-				for(RobotPeerImpl rp2 : robots2) {
+				
+				/* TODO nearest first...? farthest first...? */
+				List<RobotPeerImpl> robots2 = new ArrayList<RobotPeerImpl>(robots);
+				Collections.shuffle(robots2);
+				
+				for(RobotPeerImpl rp2 : robots) {
 					if(rp == rp2 || !rp2.isAlive()) {
 						continue;
 					}
-					RobotUpdateEventImpl rue = new RobotUpdateEventImpl(tick, rp2.getName(), rp2.getVelocityVector(),
-							rp2.getPositionVector(), rp2.getEnergy());
+					RobotUpdateEventImpl rue = new RobotUpdateEventImpl(tick, rp2.getName(), rp2.getVelocity(),
+							rp2.getPosition(), rp2.getEnergy());
 					rp.addEvent(rue);
 				}
 			}
@@ -184,9 +195,7 @@ public class BattleRunner implements Runnable {
 			}
 
 			runRobots();
-
-			// executors.execute();
-
+			
 			/* Update Robots */
 			for(RobotPeerImpl rp : robots) {
 				if(!rp.isAlive()) {
@@ -202,15 +211,15 @@ public class BattleRunner implements Runnable {
 
 				synchronized(this) {
 					// try and fire all bullets
-					BulletImpl b = rp.getBulletFired();
-					if(b != null) {
+					if(rp.isFiringBullet()) {
+						BulletImpl b = rp.getBulletFired();
 						b.setActive(true);
 						bullets.add(b);
 					}
-
+					
 					// try and fire all missiles
-					MissileImpl m = rp.getMissileFired();
-					if(m != null) {
+					if(rp.isFiringMissile()) {
+						MissileImpl m = rp.getMissileFired();
 						m.setActive(true);
 						missiles.add(m);
 					}
@@ -282,18 +291,11 @@ public class BattleRunner implements Runnable {
 		while(bit.hasNext()) {
 			BulletImpl b = bit.next();
 
-			if(!b.isActive()) {
-				// remove the bullet
-				bit.remove();
-				// TODO inform robot the bullet has gone out of bounds
-				continue;
-			}
-
 			Vector p = b.getPositionVector();
 
 			RobotPeerImpl hit = null;
 
-			// nearest point on line segment to sphere
+			// TODO nearest point on line segment to sphere
 			for(RobotPeerImpl rp : robots) {
 				if(b.isOwner(rp) || !rp.isAlive()) {
 					continue;
@@ -335,6 +337,16 @@ public class BattleRunner implements Runnable {
 			}
 
 			b.update();
+			
+			if(!b.isActive()) {
+				// remove the bullet
+				bit.remove();
+				
+				BulletMissEventImpl bme = new BulletMissEventImpl(tick, b);
+				b.getOwner().addEvent(bme);
+				
+				continue;
+			}
 		}
 	}
 
@@ -343,13 +355,6 @@ public class BattleRunner implements Runnable {
 		Iterator<MissileImpl> mit = missiles.iterator();
 		while(mit.hasNext()) {
 			MissileImpl m = mit.next();
-
-			if(!m.isActive()) {
-				// remove the missile
-				mit.remove();
-				// TODO inform robot the missile has gone out of bounds
-				continue;
-			}
 
 			Vector p = m.getPositionVector();
 
@@ -364,6 +369,7 @@ public class BattleRunner implements Runnable {
 			}
 
 			// check collision
+			// TODO check moving sphere to moving sphere
 			if(m.isArmed()) {
 				for(RobotPeerImpl rp : robots) {
 					if(!rp.isAlive()) {
@@ -382,6 +388,19 @@ public class BattleRunner implements Runnable {
 				mit.remove();
 
 				hit.setEnergy(hit.getEnergy() - Rules.MISSILE_DAMAGE);
+				
+				RobotPeerImpl owner = m.getOwner();
+				
+				/* on hit by missile */
+				/* we can show the missile, because by the time the get the message, the missile is destroyed
+				 * so they can try and set the thrust all they want, it won't do anything... :) */
+				HitByMissileEventImpl hbme = new HitByMissileEventImpl(tick, m, owner.getName());
+				hit.addEvent(hbme);
+				
+				/* on missile hit */
+				MissileHitEventImpl mhe = new MissileHitEventImpl(tick, m, hit.getName());
+				owner.addEvent(mhe);
+				
 				if(hit.getEnergy() <= 0) {
 					// generate death event
 					RobotDeathEventImpl e = new RobotDeathEventImpl(tick, hit.getName());
@@ -395,7 +414,7 @@ public class BattleRunner implements Runnable {
 
 					hit.kill();
 				}
-				RobotPeerImpl owner = m.getOwner();
+				
 				owner.setEnergy(owner.getEnergy() + Rules.MISSILE_ONHIT_GAIN);
 
 				continue;
@@ -430,6 +449,16 @@ public class BattleRunner implements Runnable {
 			}
 
 			m.update();
+			
+			if(!m.isActive()) {
+				// remove the missile
+				mit.remove();
+				
+				MissileMissEventImpl mme = new MissileMissEventImpl(tick, m);
+				m.getOwner().addEvent(mme);
+				
+				continue;
+			}
 		}
 	}
 }

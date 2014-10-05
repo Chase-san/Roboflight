@@ -24,7 +24,12 @@ package roboflight;
 
 import roboflight.events.BattleStartedEvent;
 import roboflight.events.BulletHitEvent;
+import roboflight.events.BulletMissEvent;
 import roboflight.events.HitByBulletEvent;
+import roboflight.events.HitByMissileEvent;
+import roboflight.events.HitWallEvent;
+import roboflight.events.MissileHitEvent;
+import roboflight.events.MissileMissEvent;
 import roboflight.events.MissileUpdateEvent;
 import roboflight.events.RobotDeathEvent;
 import roboflight.events.RobotUpdateEvent;
@@ -43,33 +48,51 @@ public interface Robot {
 	public void onBattleStarted(BattleStartedEvent e);
 
 	/**
-	 * This method is called when the robot has been hit by a bullet.
-	 * 
-	 * @param e
-	 *            The BulletHitEvent set by the game.
+	 * This method is called when the robot has hit another robot with a bullet.
 	 */
 	public void onBulletHit(BulletHitEvent e);
 
 	/**
+	 * This method is called when one of the robot's bullets has gone out of
+	 * bounds by hitting the wall.
+	 */
+	public void onBulletMiss(BulletMissEvent e);
+
+	/**
 	 * This method is called when the robot has been hit by a bullet.
-	 * 
-	 * @param e
-	 *            The HitByBulletEvent set by the game.
 	 */
 	public void onHitByBullet(HitByBulletEvent e);
 
 	/**
+	 * This method is called when the robot has been hit by a missile.
+	 */
+	public void onHitByMissile(HitByMissileEvent e);
+
+	/**
+	 * This method is called when the robot hits the outer wall.
+	 */
+	public void onHitWall(HitWallEvent e);
+
+	/**
+	 * This method is called when the robot has hit another robot with a
+	 * missile.
+	 */
+	public void onMissileHit(MissileHitEvent e);
+
+	/**
+	 * This method is called when one of the robot's missiles has gone out of
+	 * bounds by hitting the wall.
+	 */
+	public void onMissileMiss(MissileMissEvent e);
+
+	/**
 	 * This method is called to supply information about a missile.
-	 * 
 	 */
 	public void onMissileUpdate(MissileUpdateEvent e);
 
 	/**
 	 * This method is called when the robot dies. May include this robot as
 	 * well.
-	 * 
-	 * @param e
-	 *            The RobotDeathEvent set by the game.
 	 */
 	public void onRobotDeath(RobotDeathEvent e);
 
@@ -77,8 +100,6 @@ public interface Robot {
 	 * This method is called to supply information about another opponent. It is
 	 * called multiple times by the engine to inform you about multiple
 	 * opponents.
-	 * 
-	 * @param e
 	 */
 	public void onRobotUpdate(RobotUpdateEvent e);
 

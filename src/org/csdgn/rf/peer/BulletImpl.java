@@ -20,9 +20,7 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package org.csdgn.rf.peer.events;
-
-import org.csdgn.rf.peer.RobotPeerImpl;
+package org.csdgn.rf.peer;
 
 import roboflight.Bullet;
 import roboflight.util.Rules;

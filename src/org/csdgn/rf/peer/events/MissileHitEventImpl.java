@@ -20,28 +20,28 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package roboflight.events;
+package org.csdgn.rf.peer.events;
 
-import roboflight.Bullet;
+import roboflight.Missile;
+import roboflight.events.MissileHitEvent;
 
-/**
- * This interface defines an event that is generated when a bullet from a
- * robot hits another robot.
- * 
- * @author Robert Maupin
- */
-public interface BulletHitEvent extends Event {
-	/**
-	 * The bullet object this event is about, and that collided with a robot.
-	 * 
-	 * @return the bullet that hit the robot
-	 */
-	public Bullet getBullet();
+public class MissileHitEventImpl extends EventImpl implements MissileHitEvent {
+	private final String name;
+	private final Missile missile;
 
-	/**
-	 * This method returns the name of the robot that was hit by a bullet
-	 * 
-	 * @return the name of the robot that was hit by a bullet.
-	 */
-	public String getName();
+	public MissileHitEventImpl(long time, Missile missile, String name) {
+		super(time);
+		this.name = name;
+		this.missile = missile;
+	}
+
+	@Override
+	public Missile getMissile() {
+		return missile;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
 }
