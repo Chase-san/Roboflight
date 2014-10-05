@@ -86,7 +86,14 @@ public class Vector implements Cloneable {
 	}
 
 	/**
-	 * Creates a new vector with the x,y, and z components initialiazed to the
+	 * Creates a vector with x,y, and z initialized to to the given value..
+	 */
+	public Vector(final double value) {
+		x = y = z = value;
+	}
+
+	/**
+	 * Creates a new vector with the x,y, and z components initialized to the
 	 * given values.
 	 * 
 	 * @param x
@@ -196,6 +203,24 @@ public class Vector implements Cloneable {
 	}
 
 	/**
+	 * Checks if any part of this vector is infinite.
+	 * 
+	 * @return true, if infinite.
+	 */
+	public boolean isInfinite() {
+		return Double.isInfinite(x) || Double.isInfinite(y) || Double.isInfinite(z);
+	}
+
+	/**
+	 * Checks if any part of this vector is NaN (Not a Number).
+	 * 
+	 * @return true, if NaN.
+	 */
+	public boolean isNaN() {
+		return Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z);
+	}
+
+	/**
 	 * The length of this vector. This is identical to the vectors distance from
 	 * the origin.
 	 * 
@@ -222,6 +247,38 @@ public class Vector implements Cloneable {
 	 */
 	public Vector normalize() {
 		scale(1.0 / length());
+		return this;
+	}
+
+	/**
+	 * Performs element-wise multiplication with the given vector. This method
+	 * takes each element in this vector and multiplies it by it's counterpart
+	 * in the given vector. It then stores the value in this vector.
+	 * 
+	 * @param p
+	 *            The vector to multiply by.
+	 * @return This vector.
+	 */
+	public Vector product(final Vector p) {
+		x *= p.x;
+		y *= p.y;
+		z *= p.z;
+		return this;
+	}
+
+	/**
+	 * Performs element-wise division with the given vector. This method takes
+	 * each element in this vector and divides it by it's counterpart in the
+	 * given vector. It then stores the value in this vector.
+	 * 
+	 * @param p
+	 *            The vector to divide by.
+	 * @return This vector.
+	 */
+	public Vector quotient(final Vector p) {
+		x /= p.x;
+		y /= p.y;
+		z /= p.z;
 		return this;
 	}
 
