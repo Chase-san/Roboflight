@@ -203,10 +203,14 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 			this.energy = 0;
 		}
 	}
+	
+	private boolean isBadVector(Vector vec) {
+		return vec == null || vec.isNaN() || vec.isInfinite() || vec.lengthSq() == 0;
+	}
 
 	@Override
 	public final Bullet setFireBullet(final Vector target) {
-		if(!enabled || bulletDelay > 0 || energy < Rules.BULLET_COST || target.lengthSq() == 0) {
+		if(!enabled || bulletDelay > 0 || energy < Rules.BULLET_COST || isBadVector(target)) {
 			return null;
 		}
 		fireBullet = true;
@@ -218,11 +222,10 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 
 	@Override
 	public final Missile setFireMissile(final Vector target) {
-		if(!enabled || missileDelay > 0 || energy < Rules.MISSILE_COST || target.lengthSq() == 0) {
+		if(!enabled || missileDelay > 0 || energy < Rules.MISSILE_COST || isBadVector(target)) {
 			return null;
 		}
 		fireMissile = true;
-
 		missile = new MissileImpl(this);
 		missile.getPositionVector().set(position);
 		missile.getVelocityVector().set(target).normalize().scale(Rules.MISSILE_LAUNCH_VELOCITY);
