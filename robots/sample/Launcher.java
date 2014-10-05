@@ -19,6 +19,8 @@ import roboflight.BasicRobot;
 import roboflight.Missile;
 import roboflight.events.BattleStartedEvent;
 import roboflight.events.HitWallEvent;
+import roboflight.events.MissileHitEvent;
+import roboflight.events.MissileMissEvent;
 import roboflight.events.RobotUpdateEvent;
 import roboflight.events.TurnEndedEvent;
 import roboflight.util.Vector;
@@ -41,6 +43,14 @@ public class Launcher extends BasicRobot {
 		} else if(e.getName().equals(target)) {
 			missile.setThrust(e.getPosition().sub(missile.getPosition()));
 		}
+	}
+	
+	public void onMissileMissed(MissileMissEvent e) {
+		missile = null;
+	}
+	
+	public void onMissileHit(MissileHitEvent e) {
+		missile = null;
 	}
 	
 	public void onBattleStarted(BattleStartedEvent e) {

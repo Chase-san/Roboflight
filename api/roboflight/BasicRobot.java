@@ -47,8 +47,13 @@ public class BasicRobot implements Robot, RobotPeer {
 	private RobotPeer peer;
 
 	@Override
-	public double getBulletHeat() {
-		return peer.getBulletHeat();
+	public int getBulletDelay() {
+		return peer.getBulletDelay();
+	}
+	
+	@Override
+	public int getMissileDelay() {
+		return peer.getMissileDelay();
 	}
 
 	@Override
@@ -148,5 +153,4 @@ public class BasicRobot implements Robot, RobotPeer {
 	public void setThrust(Vector thrust) {
 		peer.setThrust(thrust);
 	}
-
 }

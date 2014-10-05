@@ -29,20 +29,22 @@ package roboflight.util;
  */
 public final class Rules {
 	public static final double BATTLEFIELD_RADIUS = 1000;
-	public static final double BULLET_COOLING_RATE = 1;
 	public static final double BULLET_DAMAGE = 2;
 	public static final double BULLET_COST = 0.5;
-	public static final double BULLET_HEAT = 10;
-	public static final double BULLET_START_HEAT = BULLET_HEAT * 5;
+	public static final int BULLET_DELAY = 10;
+	public static final int BULLET_START_DELAY = 50;
 	public static final double BULLET_ONHIT_GAIN = 2;
 	public static final double BULLET_VELOCITY = 20;
+	public static final int MISSILE_DELAY = 20;
+	public static final int MISSILE_START_DELAY = 80;
 	public static final double MISSILE_COST = 8;
 	public static final double MISSILE_DAMAGE = 16;
 	public static final double MISSILE_ONHIT_GAIN = 16;
 	public static final double MISSILE_RADIUS = 10;
+	public static final double MISSILE_NO_VELOCITY_THRESHOLD = 0.2;
 	public static final double MISSILE_MAX_THRUST = 0.4;
 	public static final double MISSILE_MAX_VELOCITY = 15;
-	public static final double MISSILE_FIRE_VELOCITY = 5;
+	public static final double MISSILE_LAUNCH_VELOCITY = 5;
 	public static final double ROBOT_MAX_THRUST = 1;
 	public static final double ROBOT_MAX_VELOCITY = 10;
 	public static final double ROBOT_RADIUS = 30;

@@ -32,9 +32,14 @@ import roboflight.util.Vector;
  */
 public interface RobotPeer {
 	/**
-	 * Returns the current bullet heat.
+	 * Returns the delay in turns before you may fire a bullet.
 	 */
-	public double getBulletHeat();
+	public int getBulletDelay();
+	
+	/**
+	 * Returns the delay in turns before you may fire a missile.
+	 */
+	public int getMissileDelay();
 
 	/**
 	 * Gets your robots current energy.

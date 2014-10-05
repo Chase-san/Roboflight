@@ -129,7 +129,6 @@ public class BattleRunner implements Runnable {
 			long time = System.currentTimeMillis();
 
 			if(tick == 0) {
-				System.out.printf("BSE @ %d\n", tick);
 				BattleStartedEventImpl bse = new BattleStartedEventImpl(tick);
 
 				for(RobotPeerImpl rp : robots) {
@@ -421,7 +420,8 @@ public class BattleRunner implements Runnable {
 			} else {
 				// update robots with the missiles information
 				// only if a line between them is unbroken (by other robots)
-				if(m.getVelocityVector().lengthSq() > 0) {
+				// and the missile is moving.
+				if(m.getVelocityVector().lengthSq() > Rules.MISSILE_NO_VELOCITY_THRESHOLD*Rules.MISSILE_NO_VELOCITY_THRESHOLD) {
 					for(RobotPeerImpl rp : robots) {
 
 						boolean blocked = false;

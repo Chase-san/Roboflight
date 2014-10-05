@@ -46,7 +46,8 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	private final ArrayDeque<Event> eventQueue = new ArrayDeque<Event>();
 	private Robot robot;
 	private String name;
-	private double bulletHeat = Rules.BULLET_START_HEAT;
+	private int bulletDelay = Rules.BULLET_START_DELAY;
+	private int missileDelay = Rules.MISSILE_START_DELAY;
 	private BulletImpl bullet;
 	private MissileImpl missile;
 	private boolean fireBullet = false;
@@ -89,13 +90,18 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		}
 		fireBullet = false;
 		energy -= Rules.BULLET_COST;
-		bulletHeat += Rules.BULLET_HEAT;
+		bulletDelay = Rules.BULLET_DELAY;
 		return bullet;
 	}
 
 	@Override
-	public double getBulletHeat() {
-		return bulletHeat;
+	public int getMissileDelay() {
+		return missileDelay;
+	}
+	
+	@Override
+	public int getBulletDelay() {
+		return bulletDelay;
 	}
 
 	@Override
@@ -111,8 +117,9 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		if(!fireMissile) {
 			return null;
 		}
-		energy -= Rules.MISSILE_COST;
 		fireMissile = false;
+		energy -= Rules.MISSILE_COST;
+		missileDelay = Rules.MISSILE_DELAY;
 		return missile;
 	}
 
@@ -199,7 +206,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 
 	@Override
 	public final Bullet setFireBullet(final Vector target) {
-		if(!enabled || bulletHeat > 0 || energy < Rules.BULLET_COST || target.lengthSq() == 0) {
+		if(!enabled || bulletDelay > 0 || energy < Rules.BULLET_COST || target.lengthSq() == 0) {
 			return null;
 		}
 		fireBullet = true;
@@ -211,14 +218,14 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 
 	@Override
 	public final Missile setFireMissile(final Vector target) {
-		if(!enabled || energy < Rules.MISSILE_COST || target.lengthSq() == 0) {
+		if(!enabled || missileDelay > 0 || energy < Rules.MISSILE_COST || target.lengthSq() == 0) {
 			return null;
 		}
 		fireMissile = true;
 
 		missile = new MissileImpl(this);
 		missile.getPositionVector().set(position);
-		missile.getVelocityVector().set(target).normalize().scale(Rules.MISSILE_FIRE_VELOCITY);
+		missile.getVelocityVector().set(target).normalize().scale(Rules.MISSILE_LAUNCH_VELOCITY);
 
 		return missile;
 	}
@@ -267,10 +274,12 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		// update position
 		position.add(velocity);
 		lastThrust.set(thrust);
-		// cool down our gun (bullet heat)
-		bulletHeat -= Rules.BULLET_COOLING_RATE;
-		if(bulletHeat < 0) {
-			bulletHeat = 0;
+		// reduce the firing delay
+		if(bulletDelay > 0) {
+			--bulletDelay;
+		}
+		if(missileDelay > 0) {
+			--missileDelay;
 		}
 	}
 }
