@@ -148,6 +148,10 @@ public class GLFontRenderer {
 
 		glEnable(GL_TEXTURE_2D);
 		
+		if(c < 32 || c > 127) {
+			c = '?';
+		}
+		
 		Rectangle rect = bounds[c];
 
 		glBindTexture(GL_TEXTURE_2D, id);
@@ -182,7 +186,11 @@ public class GLFontRenderer {
 		
 		int x = 0;
 		for(int i = 0; i < str.length(); ++i) {
-			rect = bounds[str.charAt(i)];
+			int c = str.charAt(i);
+			if(c < 32 || c > 127) {
+				c = '?';
+			}
+			rect = bounds[c];
 
 			glTexCoord2d(rect.x*xscale, rect.y*yscale);
 			glVertex2i(x, 0);
@@ -206,6 +214,8 @@ public class GLFontRenderer {
 	}
 
 	public int height(int c) {
+		if(c < 32 || c > 127)
+			return bounds['?'].height;
 		return bounds[c].height;
 	}
 
@@ -213,6 +223,9 @@ public class GLFontRenderer {
 		int height = 0;
 		for(int i = 0; i < str.length(); ++i) {
 			int c = str.charAt(i);
+			if(c < 32 || c > 127) {
+				c = '?';
+			}
 			if(bounds[c].height > height) {
 				height = bounds[c].height;
 			}
@@ -221,6 +234,8 @@ public class GLFontRenderer {
 	}
 
 	public int width(int c) {
+		if(c < 32 || c > 127)
+			return bounds['?'].width;
 		return bounds[c].width;
 	}
 
@@ -228,6 +243,9 @@ public class GLFontRenderer {
 		int width = 0;
 		for(int i = 0; i < str.length(); ++i) {
 			int c = str.charAt(i);
+			if(c < 32 || c > 127) {
+				c = '?';
+			}
 			width += bounds[c].width;
 		}
 		return width;
