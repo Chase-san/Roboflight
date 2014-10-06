@@ -60,6 +60,7 @@ import roboflight.util.Vector;
  */
 public class BattleRunner implements Runnable {
 	public static final int START_FPS = 20;
+	public static final int MAXIMUM_RUNTIME = 1000;
 	 
 	public static BattleRunner create(Robot[] robot) {
 		BattleRunner runner = new BattleRunner();
@@ -269,18 +270,14 @@ public class BattleRunner implements Runnable {
 		for(RobotPeerImpl rp : robots) {
 			future.add(executors.submit(rp));
 		}
-		/* 5 seconds till kill */
+		/* kill them if they take to long */
 		long runtime = System.currentTimeMillis();
-		while(System.currentTimeMillis() - runtime < 5000) {
-			boolean wait = false;
+		while(System.currentTimeMillis() - runtime < MAXIMUM_RUNTIME) {
 			for(Future<?> f : future) {
 				/* check if done */
 				if(!f.isDone()) {
-					wait = true;
+					continue;
 				}
-			}
-			if(!wait) {
-				break;
 			}
 		}
 		for(Future<?> f : future) {

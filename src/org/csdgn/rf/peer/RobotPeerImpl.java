@@ -74,15 +74,15 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		energy = 0;
 		thrust.set(0, 0, 0);
 	}
-	
+
 	public boolean isFiringBullet() {
 		return fireBullet;
 	}
-	
+
 	public boolean isFiringMissile() {
 		return fireMissile;
 	}
-	
+
 	public boolean didHitWall() {
 		return hitWall;
 	}
@@ -101,7 +101,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	public int getMissileDelay() {
 		return missileDelay;
 	}
-	
+
 	@Override
 	public int getBulletDelay() {
 		return bulletDelay;
@@ -189,13 +189,13 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 			} else if(e instanceof TurnStartedEvent) {
 				robot.onTurnStarted((TurnStartedEvent) e);
 			} else if(e instanceof HitWallEvent) {
-				robot.onHitWall((HitWallEvent)e);
+				robot.onHitWall((HitWallEvent) e);
 			} else if(e instanceof HitByMissileEvent) {
-				robot.onHitByMissile((HitByMissileEvent)e);
+				robot.onHitByMissile((HitByMissileEvent) e);
 			} else if(e instanceof MissileHitEvent) {
-				robot.onMissileHit((MissileHitEvent)e);
+				robot.onMissileHit((MissileHitEvent) e);
 			} else if(e instanceof MissileMissEvent) {
-				robot.onMissileMiss((MissileMissEvent)e);
+				robot.onMissileMiss((MissileMissEvent) e);
 			}
 		}
 	}
@@ -287,7 +287,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 			--missileDelay;
 		}
 	}
-	
+
 	public void setOthersCount(int count) {
 		others = count;
 	}
