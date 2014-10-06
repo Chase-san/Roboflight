@@ -127,6 +127,7 @@ public class BattleRunner implements Runnable {
 			}
 
 			long time = System.currentTimeMillis();
+			int robotCount = 0;
 
 			if(tick == 0) {
 				BattleStartedEventImpl bse = new BattleStartedEventImpl(tick);
@@ -163,6 +164,10 @@ public class BattleRunner implements Runnable {
 
 			/* send update of other robots to robot */
 			for(RobotPeerImpl rp : robots) {
+				if(rp.isAlive()) {
+					++robotCount;
+				}
+				
 				if(!rp.isEnabled() || !rp.isAlive()) {
 					continue;
 				}
@@ -187,6 +192,8 @@ public class BattleRunner implements Runnable {
 				if(!rp.isAlive()) {
 					continue;
 				}
+				
+				rp.setOthersCount(robotCount - 1);
 
 				if(rp.isEnabled()) {
 					rp.addEvent(tee);
@@ -283,68 +290,60 @@ public class BattleRunner implements Runnable {
 	public void stop() {
 		running = false;
 	}
+	
+	private void handleBulletHit(BulletImpl bullet, RobotPeerImpl hit) {
+		bullet.setActive(false);
+		RobotPeerImpl owner = bullet.getOwner();
+		
+		owner.addEvent(new BulletHitEventImpl(tick, bullet, hit.getName()));
+		hit.addEvent(new HitByBulletEventImpl(tick, bullet, owner.getName()));
+		
+		owner.setEnergy(owner.getEnergy() + Rules.BULLET_ONHIT_GAIN);
+		hit.setEnergy(hit.getEnergy() - Rules.BULLET_DAMAGE);
+		
+		if(hit.getEnergy() <= 0) {
+			System.out.printf("Death: %s\n", hit.getName());
+			
+			RobotDeathEventImpl rde = new RobotDeathEventImpl(tick, hit.getName());
+			for(RobotPeerImpl rp : robots) {
+				if(rp.isAlive()) {
+					rp.addEvent(rde);
+				}
+			}
+			
+			hit.kill();
+		}
+	}
 
 	private void updateBullets() {
 		// update all bullets
 		Iterator<BulletImpl> bit = bullets.iterator();
-		while(bit.hasNext()) {
+		mainloop: while(bit.hasNext()) {
 			BulletImpl b = bit.next();
+			
+			//line
+			Vector la = b.getPosition();
+			Vector lb = b.getNextPosition();
 
-			Vector p = b.getPositionVector();
-
-			RobotPeerImpl hit = null;
-
-			// TODO nearest point on line segment to sphere
 			for(RobotPeerImpl rp : robots) {
 				if(b.isOwner(rp) || !rp.isAlive()) {
 					continue;
 				}
-				if(rp.getPositionVector().distanceSq(p) < Rules.ROBOT_RADIUS * Rules.ROBOT_RADIUS) {
-					hit = rp;
-					break;
+				
+				double ldist = Utils.lineSegmentPointDistSq(la, lb, rp.getPositionVector());
+				if(ldist < Rules.ROBOT_RADIUS * Rules.ROBOT_RADIUS) {
+					handleBulletHit(b, rp);
+					bit.remove();
+					continue mainloop;
 				}
 			}
-
-			if(hit != null) {
-				b.setActive(false);
-				bit.remove();
-
-				// generate hitbybullet and bullethit events
-
-				b.getOwner().addEvent(new BulletHitEventImpl(tick, b, hit.getName()));
-
-				hit.addEvent(new HitByBulletEventImpl(tick, b, b.getOwner().getName()));
-
-				hit.setEnergy(hit.getEnergy() - Rules.BULLET_DAMAGE);
-				if(hit.getEnergy() <= 0) {
-					// generate death event
-					RobotDeathEventImpl e = new RobotDeathEventImpl(tick, hit.getName());
-
-					// inform all robots about the robot death
-					for(RobotPeerImpl rp : robots) {
-						if(rp.isAlive()) {
-							rp.addEvent(e);
-						}
-					}
-
-					hit.kill();
-				}
-				RobotPeerImpl owner = b.getOwner();
-				owner.setEnergy(owner.getEnergy() + Rules.BULLET_ONHIT_GAIN);
-
-				continue;
-			}
-
+			
 			b.update();
 			
 			if(!b.isActive()) {
-				// remove the bullet
 				bit.remove();
-				
 				BulletMissEventImpl bme = new BulletMissEventImpl(tick, b);
 				b.getOwner().addEvent(bme);
-				
-				continue;
 			}
 		}
 	}
@@ -429,7 +428,7 @@ public class BattleRunner implements Runnable {
 							if(test == rp) {
 								continue;
 							}
-							if(Utils.intersectLineSphere(rp.getPositionVector(), m.getPositionVector(),
+							if(intersectsLineSphere(rp.getPositionVector(), m.getPositionVector(),
 									test.getPositionVector(), Rules.ROBOT_RADIUS)) {
 								blocked = true;
 								break;
@@ -460,5 +459,12 @@ public class BattleRunner implements Runnable {
 				continue;
 			}
 		}
+	}
+	
+	public static final boolean intersectsLineSphere(Vector line0, Vector line1, Vector point, double radius) {
+		if(Utils.lineSegmentPointDistSq(line0, line1, point) < radius * radius) {
+			return true;
+		}
+		return false;
 	}
 }
