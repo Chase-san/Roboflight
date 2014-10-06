@@ -17,12 +17,7 @@ package sample;
 
 import roboflight.BasicRobot;
 import roboflight.Missile;
-import roboflight.events.BattleStartedEvent;
-import roboflight.events.HitWallEvent;
-import roboflight.events.MissileHitEvent;
-import roboflight.events.MissileMissEvent;
-import roboflight.events.RobotUpdateEvent;
-import roboflight.events.TurnEndedEvent;
+import roboflight.events.*;
 import roboflight.util.Vector;
 
 /**
@@ -45,24 +40,26 @@ public class Launcher extends BasicRobot {
 		}
 	}
 	
-	public void onMissileMissed(MissileMissEvent e) {
-		missile = null;
-	}
-	
-	public void onMissileHit(MissileHitEvent e) {
-		missile = null;
-	}
-	
+	@Override
 	public void onBattleStarted(BattleStartedEvent e) {
 		/* fly towards center */
 		thrust.set(getPosition().scale(-1));
 	}
 	
+	@Override
 	public void onHitWall(HitWallEvent e) {
 		/* reverse when we hit the wall */
 		thrust.scale(-1);
 	}
 	
+	@Override
+	public void onTurnStarted(TurnStartedEvent e) {
+		if(missile != null && !missile.isActive()) {
+			missile = null;
+		}
+	}
+	
+	@Override
 	public void onTurnEnded(TurnEndedEvent e) {
 		/* apply thrust */
 		setThrust(thrust);

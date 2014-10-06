@@ -24,6 +24,7 @@ package org.csdgn.rf;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -59,9 +60,11 @@ import roboflight.util.Vector;
  */
 public class BattleRunner implements Runnable {
 	public static final int START_FPS = 20;
-
+	 
 	public static BattleRunner create(Robot[] robot) {
 		BattleRunner runner = new BattleRunner();
+		
+		 HashMap<String, Integer> named = new HashMap<String,Integer>();
 
 		for(Robot r : robot) {
 			if(r == null) {
@@ -69,7 +72,18 @@ public class BattleRunner implements Runnable {
 			}
 			RobotPeerImpl peer = new RobotPeerImpl();
 			peer.setRobot(r);
-			peer.setName(r.getClass().getName());
+			String name = r.getClass().getName();
+			Integer n = named.get(name);
+			if(n == null) {
+				n = 0;
+			}
+			if(n > 0) {
+				peer.setName(name + " " + n);
+			} else {
+				peer.setName(name);
+			}
+			named.put(name, ++n);
+			
 			peer.setTime(-1);
 
 			// set a random starting position
@@ -302,8 +316,6 @@ public class BattleRunner implements Runnable {
 		hit.setEnergy(hit.getEnergy() - Rules.BULLET_DAMAGE);
 		
 		if(hit.getEnergy() <= 0) {
-			System.out.printf("Death: %s\n", hit.getName());
-			
 			RobotDeathEventImpl rde = new RobotDeathEventImpl(tick, hit.getName());
 			for(RobotPeerImpl rp : robots) {
 				if(rp.isAlive()) {
