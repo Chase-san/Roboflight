@@ -272,12 +272,17 @@ public class BattleRunner implements Runnable {
 		}
 		/* kill them if they take to long */
 		long runtime = System.currentTimeMillis();
+		
 		while(System.currentTimeMillis() - runtime < MAXIMUM_RUNTIME) {
+			boolean wait = false;
 			for(Future<?> f : future) {
 				/* check if done */
 				if(!f.isDone()) {
-					continue;
+					wait = true;
 				}
+			}
+			if(!wait) {
+				break;
 			}
 		}
 		for(Future<?> f : future) {
