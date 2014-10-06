@@ -25,6 +25,7 @@ package org.csdgn.rf.gui;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.beans.Beans;
@@ -191,7 +192,8 @@ public class RenderDisplay extends Canvas {
 				continue;
 			}
 
-			glColor3f(1, 1, 1);
+			float[] cf = rp.getColor();
+			glColor3f(cf[0], cf[1], cf[2]);
 
 			Vector p = rp.getPosition().scale(1.0 / Rules.BATTLEFIELD_RADIUS);
 			drawRobot((float) p.x, (float) p.y, (float) p.z);
@@ -372,7 +374,7 @@ public class RenderDisplay extends Canvas {
 
 	private void drawRobot(float x, float y, float z) {
 		// TODO allow special robot colors
-		drawCircle(x, y, z, (float) (Rules.ROBOT_RADIUS / Rules.BATTLEFIELD_RADIUS), 8);
+		drawCircle(x, y, z, (float) (Rules.ROBOT_RADIUS / Rules.BATTLEFIELD_RADIUS), 16);
 	}
 
 	public boolean isCreated() {

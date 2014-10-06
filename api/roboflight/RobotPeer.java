@@ -22,6 +22,8 @@
  */
 package roboflight;
 
+import java.awt.Color;
+
 import roboflight.util.Vector;
 
 /**
@@ -83,6 +85,15 @@ public interface RobotPeer {
 	 * @return A vector with your robots velocity.
 	 */
 	public Vector getVelocity();
+
+	/**
+	 * Set's the color of the robot on the field. The color may not be exactly
+	 * the same.
+	 * 
+	 * @param color
+	 *            The color to use to display the robot.
+	 */
+	public void setColor(Color color);
 
 	/**
 	 * Sets a bullet to fire.

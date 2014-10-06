@@ -22,6 +22,8 @@
  */
 package roboflight;
 
+import java.awt.Color;
+
 import roboflight.events.BattleStartedEvent;
 import roboflight.events.BulletHitEvent;
 import roboflight.events.BulletMissEvent;
@@ -137,6 +139,11 @@ public class BasicRobot implements Robot, RobotPeer {
 
 	@Override
 	public void onTurnStarted(TurnStartedEvent e) {
+	}
+
+	@Override
+	public void setColor(Color color) {
+		peer.setColor(color);
 	}
 
 	@Override

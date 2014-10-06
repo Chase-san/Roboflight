@@ -22,6 +22,7 @@
  */
 package org.csdgn.rf.peer;
 
+import java.awt.Color;
 import java.util.ArrayDeque;
 
 import org.csdgn.rf.CoreUtils;
@@ -48,6 +49,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	private final ArrayDeque<Event> eventQueue = new ArrayDeque<Event>();
 	private Robot robot;
 	private String name;
+	private float[] color = new float[] { 1, 1, 1 };
 	private int bulletDelay = Rules.BULLET_START_DELAY;
 	private int missileDelay = Rules.MISSILE_START_DELAY;
 	private BulletImpl bullet;
@@ -172,9 +174,9 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		while(!eventQueue.isEmpty()) {
 			Event e = eventQueue.pop();
 
-			/* - IMPORTANT -
-			 * Keep these in alphabetical order.
-			 * That way it is easy to check if any are missing.
+			/*
+			 * - IMPORTANT - Keep these in alphabetical order. That way it is
+			 * easy to check if any are missing.
 			 */
 			if(e instanceof BattleStartedEvent) {
 				robot.onBattleStarted((BattleStartedEvent) e);
@@ -307,5 +309,21 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	@Override
 	public int getOthers() {
 		return others;
+	}
+
+	public float[] getColor() {
+		return color;
+	}
+
+	@Override
+	public void setColor(Color color) {
+		if(color == null) {
+			return;
+		}
+		this.color = color.getRGBColorComponents(null);
+		/* limit color to acceptable range, min value for each is 0.2f */
+		this.color[0] = this.color[0]*0.8f+0.2f;
+		this.color[1] = this.color[1]*0.8f+0.2f;
+		this.color[2] = this.color[2]*0.8f+0.2f;
 	}
 }
