@@ -176,8 +176,18 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 				robot.onBattleStarted((BattleStartedEvent) e);
 			} else if(e instanceof BulletHitEvent) {
 				robot.onBulletHit((BulletHitEvent) e);
+			} else if(e instanceof BulletMissEvent) {
+				robot.onBulletMiss((BulletMissEvent) e);
 			} else if(e instanceof HitByBulletEvent) {
 				robot.onHitByBullet((HitByBulletEvent) e);
+			} else if(e instanceof HitByMissileEvent) {
+				robot.onHitByMissile((HitByMissileEvent) e);
+			} else if(e instanceof HitWallEvent) {
+				robot.onHitWall((HitWallEvent) e);
+			} else if(e instanceof MissileHitEvent) {
+				robot.onMissileHit((MissileHitEvent) e);
+			} else if(e instanceof MissileMissEvent) {
+				robot.onMissileMiss((MissileMissEvent) e);
 			} else if(e instanceof MissileUpdateEvent) {
 				robot.onMissileUpdate((MissileUpdateEvent) e);
 			} else if(e instanceof RobotDeathEvent) {
@@ -188,14 +198,6 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 				robot.onTurnEnded((TurnEndedEvent) e);
 			} else if(e instanceof TurnStartedEvent) {
 				robot.onTurnStarted((TurnStartedEvent) e);
-			} else if(e instanceof HitWallEvent) {
-				robot.onHitWall((HitWallEvent) e);
-			} else if(e instanceof HitByMissileEvent) {
-				robot.onHitByMissile((HitByMissileEvent) e);
-			} else if(e instanceof MissileHitEvent) {
-				robot.onMissileHit((MissileHitEvent) e);
-			} else if(e instanceof MissileMissEvent) {
-				robot.onMissileMiss((MissileMissEvent) e);
 			}
 		}
 	}
