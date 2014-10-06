@@ -1,20 +1,35 @@
 package roboflight.util;
 
 public class Utils {
-	public static final boolean intersectLineSphere(Vector v0, Vector v1, Vector p, double len) {
-		if(linePointDistanceSq(v0, v1, p) < len * len) {
-			return true;
+	public static final double lineSegmentPointDist(Vector line0, Vector line1, Vector point) {
+		return Math.sqrt(lineSegmentPointDistSq(line0, line1, point));
+	}
+	
+	public static final double lineSegmentPointDistSq(Vector line0, Vector line1, Vector point) {
+		double lineLenSq = line1.distanceSq(line0);
+		double dot = (line0.x-point.x)*(line1.x-line0.x)
+				+(line0.y-point.y)*(line1.y-line0.y)
+				+(line0.z-point.z)*(line1.z-line0.z);
+		return (line0.distanceSq(point)*lineLenSq-dot)/lineLenSq;
+	}
+	
+	public static final Vector nearestPointOnLineSegment(Vector line0, Vector line1, Vector point) {
+		double lenSq = line0.distanceSq(line1);
+		if(lenSq == 0.0) {
+			return line0.clone();
 		}
-		return false;
-	}
-
-	public static final double linePointDistance(Vector p, Vector v0, Vector v1) {
-		return Math.sqrt(linePointDistanceSq(p, v0, v1));
-	}
-
-	public static final double linePointDistanceSq(Vector p, Vector v0, Vector v1) {
-		Vector vx = v1.clone().sub(v0);
-		return vx.clone().cross(v0.clone().sub(p)).lengthSq() / vx.lengthSq();
+		
+		Vector pv = point.clone().sub(line0);
+		Vector wv = line1.clone().sub(line0);
+		
+		double t = pv.dot(wv) / lenSq;
+		if(t <= 0) {
+			return line0.clone();
+		} else if(t >= 1) {
+			return line1.clone();
+		}
+		
+		return pv.set(line0).add(wv.scale(t));
 	}
 
 	private Utils() {
