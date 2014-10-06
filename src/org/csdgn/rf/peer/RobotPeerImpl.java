@@ -24,6 +24,8 @@ package org.csdgn.rf.peer;
 
 import java.util.ArrayDeque;
 
+import org.csdgn.rf.CoreUtils;
+
 import roboflight.Bullet;
 import roboflight.Missile;
 import roboflight.Robot;
@@ -56,6 +58,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	private boolean enabled = true;
 	private boolean hitWall = false;
 	private double energy = Rules.ROBOT_START_ENERGY;
+	private int others = 0;
 	private long time = 0;
 
 	public void addEvent(Event e) {
@@ -199,18 +202,14 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 
 	public void setEnergy(final double energy) {
 		this.energy = energy;
-		if(this.energy < 0) {
+		if(this.energy <= 0) {
 			this.energy = 0;
 		}
-	}
-	
-	private boolean isBadVector(Vector vec) {
-		return vec == null || vec.isNaN() || vec.isInfinite() || vec.lengthSq() == 0;
 	}
 
 	@Override
 	public final Bullet setFireBullet(final Vector target) {
-		if(!enabled || bulletDelay > 0 || energy < Rules.BULLET_COST || isBadVector(target)) {
+		if(!enabled || bulletDelay > 0 || energy < Rules.BULLET_COST || CoreUtils.isBadVector(target)) {
 			return null;
 		}
 		fireBullet = true;
@@ -222,7 +221,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 
 	@Override
 	public final Missile setFireMissile(final Vector target) {
-		if(!enabled || missileDelay > 0 || energy < Rules.MISSILE_COST || isBadVector(target)) {
+		if(!enabled || missileDelay > 0 || energy < Rules.MISSILE_COST || CoreUtils.isBadVector(target)) {
 			return null;
 		}
 		fireMissile = true;
@@ -243,6 +242,9 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 
 	@Override
 	public final void setThrust(final Vector thrust) {
+		if(CoreUtils.isBadVector(thrust)) {
+			return;
+		}
 		this.thrust.set(thrust);
 	}
 
@@ -284,5 +286,14 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		if(missileDelay > 0) {
 			--missileDelay;
 		}
+	}
+	
+	public void setOthersCount(int count) {
+		others = count;
+	}
+
+	@Override
+	public int getOthers() {
+		return others;
 	}
 }

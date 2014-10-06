@@ -50,11 +50,6 @@ public class BasicRobot implements Robot, RobotPeer {
 	public int getBulletDelay() {
 		return peer.getBulletDelay();
 	}
-	
-	@Override
-	public int getMissileDelay() {
-		return peer.getMissileDelay();
-	}
 
 	@Override
 	public double getEnergy() {
@@ -62,8 +57,18 @@ public class BasicRobot implements Robot, RobotPeer {
 	}
 
 	@Override
+	public int getMissileDelay() {
+		return peer.getMissileDelay();
+	}
+
+	@Override
 	public String getName() {
 		return peer.getName();
+	}
+
+	@Override
+	public int getOthers() {
+		return peer.getOthers();
 	}
 
 	@Override

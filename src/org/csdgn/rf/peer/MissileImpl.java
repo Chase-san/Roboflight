@@ -22,6 +22,8 @@
  */
 package org.csdgn.rf.peer;
 
+import org.csdgn.rf.CoreUtils;
+
 import roboflight.Missile;
 import roboflight.util.Rules;
 import roboflight.util.Vector;
@@ -79,6 +81,9 @@ public class MissileImpl implements Missile {
 
 	@Override
 	public void setThrust(final Vector thrust) {
+		if(CoreUtils.isBadVector(thrust)) {
+			return;
+		}
 		this.thrust.set(thrust);
 	}
 

@@ -35,11 +35,6 @@ public interface RobotPeer {
 	 * Returns the delay in turns before you may fire a bullet.
 	 */
 	public int getBulletDelay();
-	
-	/**
-	 * Returns the delay in turns before you may fire a missile.
-	 */
-	public int getMissileDelay();
 
 	/**
 	 * Gets your robots current energy.
@@ -49,11 +44,24 @@ public interface RobotPeer {
 	public double getEnergy();
 
 	/**
+	 * Returns the delay in turns before you may fire a missile.
+	 */
+	public int getMissileDelay();
+
+	/**
 	 * Returns the name of your robot.
 	 * 
 	 * @return your robot's name.
 	 */
 	public String getName();
+
+	/**
+	 * Gets the number of other robots in the battle. So 1 means that there is
+	 * robot aside from yours, and so on.
+	 * 
+	 * @return the number of remaining other robots.
+	 */
+	public int getOthers();
 
 	/**
 	 * Gets your robots current position in space.
