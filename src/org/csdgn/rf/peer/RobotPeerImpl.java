@@ -172,6 +172,10 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		while(!eventQueue.isEmpty()) {
 			Event e = eventQueue.pop();
 
+			/* - IMPORTANT -
+			 * Keep these in alphabetical order.
+			 * That way it is easy to check if any are missing.
+			 */
 			if(e instanceof BattleStartedEvent) {
 				robot.onBattleStarted((BattleStartedEvent) e);
 			} else if(e instanceof BulletHitEvent) {
@@ -229,7 +233,13 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		fireMissile = true;
 		missile = new MissileImpl(this);
 		missile.getPositionVector().set(position);
-		missile.getVelocityVector().set(target).normalize().scale(Rules.MISSILE_LAUNCH_VELOCITY);
+		Vector mv = missile.getVelocityVector();
+		mv.set(velocity);
+		Vector tv = target;
+		if(target.lengthSq() > Rules.MISSILE_MAX_LAUNCH_VELOCITY * Rules.MISSILE_MAX_LAUNCH_VELOCITY) {
+			tv = target.clone().normalize().scale(Rules.MISSILE_MAX_LAUNCH_VELOCITY);
+		}
+		mv.add(tv);
 
 		return missile;
 	}

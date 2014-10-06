@@ -29,6 +29,10 @@ package roboflight.util;
  */
 public final class Rules {
 	public static final double BATTLEFIELD_RADIUS = 1000;
+	public static final double ROBOT_MAX_THRUST = 1;
+	public static final double ROBOT_MAX_VELOCITY = 10;
+	public static final double ROBOT_RADIUS = 30;
+	public static final double ROBOT_START_ENERGY = 100;
 	public static final double BULLET_DAMAGE = 2;
 	public static final double BULLET_COST = 0.5;
 	public static final int BULLET_DELAY = 10;
@@ -43,12 +47,8 @@ public final class Rules {
 	public static final double MISSILE_RADIUS = 10;
 	public static final double MISSILE_NO_VELOCITY_THRESHOLD = 0.2;
 	public static final double MISSILE_MAX_THRUST = 0.4;
-	public static final double MISSILE_MAX_VELOCITY = 15;
-	public static final double MISSILE_LAUNCH_VELOCITY = 5;
-	public static final double ROBOT_MAX_THRUST = 1;
-	public static final double ROBOT_MAX_VELOCITY = 10;
-	public static final double ROBOT_RADIUS = 30;
-	public static final double ROBOT_START_ENERGY = 100;
+	public static final double MISSILE_MAX_LAUNCH_VELOCITY = 5;
+	public static final double MISSILE_MAX_VELOCITY = MISSILE_MAX_LAUNCH_VELOCITY+ROBOT_MAX_VELOCITY;
 
 	public static final boolean isInBattlefield(final Vector position) {
 		return position.lengthSq() < Rules.BATTLEFIELD_RADIUS * Rules.BATTLEFIELD_RADIUS;
