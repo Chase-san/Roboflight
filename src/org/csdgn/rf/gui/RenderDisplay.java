@@ -54,9 +54,7 @@ import roboflight.util.Vector;
  */
 public class RenderDisplay extends Canvas {
 	private static final long serialVersionUID = 6222790311368212989L;
-
-	private static final int WIDTH = 600;
-	private static final int HEIGHT = 600;
+	
 	private static final float FOV = 70f;
 	private static final float NEAR_CLIP = 0.1f;
 	private static final float FAR_CLIP = 10f;
@@ -66,6 +64,9 @@ public class RenderDisplay extends Canvas {
 	public static boolean DRAW_GRID = true;
 	public static boolean DRAW_ROBOT_LOCATORS = false;
 
+	private int width = 600;
+	private int height = 600;
+	
 	private boolean created = false;
 	private boolean dispose = false;
 	private boolean drag = false;
@@ -77,12 +78,12 @@ public class RenderDisplay extends Canvas {
 	private GLFontRenderer font;
 
 	public RenderDisplay() {
-		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		setPreferredSize(new Dimension(width, height));
 		if(Beans.isDesignTime()) {
 			setBackground(java.awt.Color.BLACK);
 		} else {
 			try {
-				Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
+				Display.setDisplayMode(new DisplayMode(width, height));
 				Display.setParent(this);
 			} catch(final LWJGLException e) {
 				e.printStackTrace();
@@ -112,19 +113,23 @@ public class RenderDisplay extends Canvas {
 		matrix.clear();
 		glLoadMatrix(matrix);
 	}
+	
+	private void setupDisplay(int width, int height) {
+		glViewport(0, 0, width, height);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		GLU.gluPerspective(FOV, width / (float) height, NEAR_CLIP, FAR_CLIP);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+	}
 
 	public void create() {
 		if(!created) {
 			try {
 				Display.create();
 				// SETUP DISPLAY
-				glViewport(0, 0, WIDTH, HEIGHT);
-				glMatrixMode(GL_PROJECTION);
-				glLoadIdentity();
-
-				GLU.gluPerspective(FOV, WIDTH / (float) HEIGHT, NEAR_CLIP, FAR_CLIP);
-				glMatrixMode(GL_MODELVIEW);
-				glLoadIdentity();
+				setupDisplay(width, height);
 
 				// WIREFRAME
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -144,6 +149,12 @@ public class RenderDisplay extends Canvas {
 			} catch(final LWJGLException e) {
 				e.printStackTrace();
 			}
+		}
+		
+		if(Display.wasResized()) {
+			width = Display.getWidth();
+			height = Display.getHeight();
+			setupDisplay(width, height);
 		}
 	}
 
@@ -288,7 +299,7 @@ public class RenderDisplay extends Canvas {
 		glTranslatef(x, y, z);
 
 		alignToCamera();
-		float scale = 1f / HEIGHT;
+		float scale = 1f / height;
 		glScalef(scale, -scale, scale);
 
 		int width = font.width(str) >> 1;

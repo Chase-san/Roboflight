@@ -88,7 +88,6 @@ public class MainWindow extends JFrame {
 		super(Roboflight.ARTIFACT_TITLE);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setLocationByPlatform(true);
-		setResizable(false);
 		display = new RenderDisplay();
 		getContentPane().add(display, BorderLayout.CENTER);
 		sidePanel = new JPanel();
