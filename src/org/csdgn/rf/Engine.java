@@ -61,6 +61,10 @@ public class Engine {
 		});
 	}
 
+	public boolean isBattleRunning() {
+		return current != null && !current.isPaused();
+	}
+	
 	public BattleRunner getCurrentBattle() {
 		return current;
 	}
@@ -93,9 +97,8 @@ public class Engine {
 	public void stopCurrentBattle() {
 		if(current != null) {
 			// shut it down to stop it quickly
-			current.setFPS(BattleRunner.START_FPS);
-
 			current.stop();
+			current.setFPS(BattleRunner.START_FPS);
 
 			// unpause it (or it will never stop)
 			if(current.isPaused()) {

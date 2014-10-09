@@ -40,7 +40,7 @@ import roboflight.events.TurnStartedEvent;
 import roboflight.util.Vector;
 
 /**
- * This is a simple extendable class that implements the Robot and RobotPeer.
+ * This is a simple extendible class that implements the Robot and RobotPeer.
  * 
  * @author Robert Maupin
  * 

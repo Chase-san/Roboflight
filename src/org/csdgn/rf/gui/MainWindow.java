@@ -73,6 +73,10 @@ public class MainWindow extends JFrame {
 			}
 		}
 	}
+	
+	private enum ButtonMode {
+		PAUSE, RESUME
+	}
 
 	private BattleDialog dialog;
 	private static final long serialVersionUID = 1510059463358895508L;
@@ -143,15 +147,10 @@ public class MainWindow extends JFrame {
 		btnPause.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				BattleRunner runner = engine.getCurrentBattle();
-				if(runner != null) {
-					if(runner.isPaused()) {
-						runner.setPaused(false);
-						btnPause.setText("Pause");
-					} else {
-						runner.setPaused(true);
-						btnPause.setText("Resume");
-					}
+				if(engine.isBattleRunning()) {
+					setPauseResume(ButtonMode.PAUSE);
+				} else {
+					setPauseResume(ButtonMode.RESUME);
 				}
 			}
 		});
@@ -234,6 +233,21 @@ public class MainWindow extends JFrame {
 		mnHelp.add(mntmAbout);
 		return menuBar;
 	}
+	
+	private void setPauseResume(ButtonMode mode) {
+		BattleRunner runner = engine.getCurrentBattle();
+		if(mode == ButtonMode.PAUSE) {
+			if(runner != null) {
+				runner.setPaused(true);
+			}
+			btnPause.setText("Resume");
+		} else {
+			if(runner != null) {
+				runner.setPaused(false);
+			}
+			btnPause.setText("Pause");
+		}
+	}
 
 	@Override
 	public void dispose() {
@@ -273,11 +287,11 @@ public class MainWindow extends JFrame {
 
 		RepaintManager.currentManager(sidePanel).markCompletelyDirty(sidePanel);
 
-		// fpsSlider
-		// btnPause
-		// btnStop
+		engine.stopCurrentBattle();
+		
 		fpsSlider.setEnabled(true);
 		fpsSlider.setValue(BattleRunner.START_FPS);
+		setPauseResume(ButtonMode.RESUME);
 		btnPause.setEnabled(true);
 		btnStop.setEnabled(true);
 
