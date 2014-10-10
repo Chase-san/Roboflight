@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -217,7 +218,7 @@ public class PluginService {
 	}
 
 	public List<ClassInfo> getList() {
-		return list;
+		return Collections.unmodifiableList(list);
 	}
 
 	public void reset() {

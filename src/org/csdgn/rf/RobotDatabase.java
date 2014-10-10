@@ -22,7 +22,6 @@
  */
 package org.csdgn.rf;
 
-import java.awt.peer.RobotPeer;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -52,7 +51,7 @@ public class RobotDatabase {
 		robots = new ArrayList<ClassInfo>();
 
 		service.addDirectory(new File("robots"));
-		service.addClass(RobotPeer.class);
+		service.addClass(Robot.class);
 		service.addClass(BasicRobot.class);
 	}
 
@@ -78,6 +77,10 @@ public class RobotDatabase {
 			loader = new URLClassLoader(new URL[] { origin.file.toURI().toURL() }, ClassLoader.getSystemClassLoader());
 		} else {
 			loader = new URLClassLoader(getRequirementURLs(info), ClassLoader.getSystemClassLoader());
+		}
+		
+		for(URL url : getRequirementURLs(info)) {
+			System.out.println(url);
 		}
 
 		// For when we go to implement the output change (not sure if this will

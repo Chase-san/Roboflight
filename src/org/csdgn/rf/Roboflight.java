@@ -58,8 +58,8 @@ public class Roboflight {
 	}
 
 	private static void loadLibraries() throws Exception {
-		// load all software libraries
-		for(File file : new File("lib").listFiles()) {
+		/* load all software libraries */
+		for(File file : new File("libs").listFiles()) {
 			if(!file.getName().endsWith("jar")) {
 				continue;
 			}
@@ -71,9 +71,9 @@ public class Roboflight {
 		try {
 			Locale.setDefault(Locale.US);
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch(Exception e) { /* Failure is unimportant. */
+		} catch(Exception e) { /* Failure is somewhat unimportant. */
 		}
-
+		
 		if(!isDevelopmentEnvironment()) {
 			// We only need to manually load the libraries if we are not
 			// in development, as the development system takes care of that.

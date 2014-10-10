@@ -6,4 +6,5 @@ tmp/
 *.bak
 *.class
 .settings/
+dispatch/
 *lwjgl*

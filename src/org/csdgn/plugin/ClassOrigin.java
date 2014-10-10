@@ -35,7 +35,7 @@ public class ClassOrigin {
 	public final boolean inJar;
 	public final File file;
 	public final String path;
-	public final HashMap<String, ClassInfo> database;
+	public final HashMap<String, ClassInfo> database; /* TODO make access to this immutable somehow */
 
 	public ClassOrigin(HashMap<String, ClassInfo> database, File file) {
 		this.database = database;

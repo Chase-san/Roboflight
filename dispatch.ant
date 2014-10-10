@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="dispath" default="dispatch" basedir="." >
+	<property name="outdir" value="dispatch" />
+	
+	<target name="compile">
+		<!-- Delete anything old we have -->
+		<delete dir="bin" failonerror="false" />
+		<mkdir dir="bin" />
+		
+		<!-- Compile the source -->
+		<javac srcdir="api" destdir="bin" includeAntRuntime="no" encoding="UTF-8"
+			fork="true" optimize="on" target="1.7" source="1.7" debug="on" compiler="javac1.7" />
+		
+		<javac srcdir="src" destdir="bin" includeAntRuntime="no" encoding="UTF-8"
+			fork="true" optimize="on" target="1.7" source="1.7" debug="on" compiler="javac1.7">
+			<classpath>
+				<fileset dir="libs">
+					<include name="*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+	
+	<target name="dispatch" depends="compile">
+		<delete dir="${outdir}" failonerror="false" />
+		<mkdir dir="${outdir}" />
+		<mkdir dir="${outdir}/libs" />
+		
+		<copy todir="${outdir}/robots">
+			<fileset dir="robots" />
+		</copy>
+		
+		<copy todir="${outdir}">
+			<fileset dir="libs/native" />
+		</copy>
+		
+		<copy todir="${outdir}/libs">
+			<fileset dir="libs" >
+				<exclude name="native/**"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${outdir}" file="README.md" />
+		<copy todir="${outdir}" file="roboflight.bat" />
+		
+		<jar duplicate="add" basedir="bin" destfile="${outdir}/libs/roboflight.api.jar" compress="true">
+			<include name="roboflight/**/*.class" />
+		</jar>
+		<jar duplicate="add" basedir="bin" destfile="${outdir}/libs/roboflight.core.jar" compress="true">
+			<include name="org/**/*.class" />
+		</jar>
+	</target>
+</project>
