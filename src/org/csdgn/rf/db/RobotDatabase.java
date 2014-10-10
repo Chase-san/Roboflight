@@ -22,15 +22,18 @@
  */
 package org.csdgn.rf.db;
 
-import java.io.BufferedInputStream;
+import java.awt.peer.RobotPeer;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+
+import org.csdgn.plugin.ClassInfo;
+import org.csdgn.plugin.ClassOrigin;
+import org.csdgn.plugin.PluginService;
+
+import roboflight.BasicRobot;
 import roboflight.Robot;
 
 /**
@@ -39,34 +42,66 @@ import roboflight.Robot;
  * @author Robert Maupin
  */
 public class RobotDatabase {
-	private static ArrayList<File> getClassList(final File directory) {
-		final ArrayList<File> list = new ArrayList<File>();
-		if(!directory.exists()) {
-			return list;
+	
+	private PluginService service;
+	private ArrayList<ClassInfo> robots;
+	
+	public RobotDatabase() {
+		service = new PluginService();
+		robots = new ArrayList<ClassInfo>();
+		
+		service.addDirectory(new File("robots"));
+		service.addClass(RobotPeer.class);
+		service.addClass(BasicRobot.class);
+	}
+	
+	public ArrayList<ClassInfo> getRobotList() {
+		return robots;
+	}
+	
+	public void build() {
+		try {
+			service.build();
+		} catch(IOException e) {
+			e.printStackTrace();
 		}
-		for(final File file : directory.listFiles()) {
-			if(file.isDirectory()) {
-				list.addAll(getClassList(file));
+		
+		for(ClassInfo info : service.getList()) {
+			if(info.isAbstract || !info.isPublic) {
 				continue;
 			}
-			if(file.getName().endsWith(".class")) {
-				list.add(file);
-			}
+			robots.add(info);
 		}
-		return list;
 	}
-
-	private final ArrayList<ClassInfo> robots = new ArrayList<ClassInfo>();
-	private final ArrayList<String> directories = new ArrayList<String>();
-
-	public void addDirectory(final String dir) {
-		directories.add(dir);
+	
+	private URL[] getClassRequirements(ClassInfo info) {
+		ClassOrigin origin = info.getOrigin();
+		//origin.database
+		
+		/* 
+		 * later on, using this, we can determine if the robot includes any classes we don't want them using
+		 * which is better then a security manager in many respects.. 
+		 * white list anything in the jar, a few JRE stuff, and the roboflight api stuff
+		 * 
+		 * But for now...
+		 */
+		
+		return null;
 	}
 
 	public Robot createRobotInstance(final ClassInfo info) throws IOException, ReflectiveOperationException {
-		// I think it goes something like this
-		final URLClassLoader loader = new URLClassLoader(new URL[] { info.parent.toURI().toURL() },
-				ClassLoader.getSystemClassLoader());
+		final URLClassLoader loader;
+		final ClassOrigin origin = info.getOrigin();
+		if(origin.inJar) {
+			loader = new URLClassLoader(new URL[] { origin.file.toURI().toURL() },
+					ClassLoader.getSystemClassLoader());
+		} else {
+			/* TODO build info tree */
+			loader = new URLClassLoader(new URL[] { new File("robots").toURI().toURL() },
+					ClassLoader.getSystemClassLoader());
+		}
+		
+		
 
 		// For when we go to implement the output change
 
@@ -83,81 +118,4 @@ public class RobotDatabase {
 		return (Robot) robot.newInstance();
 	}
 
-	public List<ClassInfo> getRobotList() {
-		return robots;
-	}
-
-	public void rebuildDatabase() {
-		robots.clear();
-		final ArrayList<ClassInfo> possibleRobots = new ArrayList<ClassInfo>();
-		final ArrayList<ClassInfo> other = new ArrayList<ClassInfo>();
-		for(final String directoryName : directories) {
-			final File dir = new File(directoryName);
-			if(!dir.isDirectory()) {
-				continue;
-			}
-			// build class list
-			for(final File f : getClassList(dir)) {
-				ClassInfo info = null;
-				try {
-					info = ClassInfo.getClassInfo(new BufferedInputStream(new FileInputStream(f)));
-					info.parent = dir;
-				} catch(final IOException e) {
-					e.printStackTrace();
-				}
-				if(info == null) {
-					continue;
-				}
-				boolean rootClass = false;
-				if("roboflight/BasicRobot".equals(info.superName)) {
-					rootClass = true;
-					possibleRobots.add(info);
-				} else {
-					for(final String str : info.interfaceNames) {
-						if("roboflight/Robot".equals(str)) {
-							rootClass = true;
-							possibleRobots.add(info);
-							break;
-						}
-					}
-				}
-
-				if(!rootClass) {
-					other.add(info);
-				}
-			}
-			if(other.size() > 0) {
-				int size = -1;
-				while(size != possibleRobots.size()) {
-					size = possibleRobots.size();
-					final Iterator<ClassInfo> it = other.iterator();
-					while(it.hasNext()) {
-						final ClassInfo info = it.next();
-						final String s = info.superName;
-						if(s != null) {
-							for(final ClassInfo root : possibleRobots) {
-								if(root.isFinal) {
-									continue;
-								}
-								if(root.thisName.equals(s)) {
-									possibleRobots.add(info);
-									it.remove();
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
-			// add all non-abstract classes
-			for(final ClassInfo info : possibleRobots) {
-				if(!info.isAbstract && !info.isInterface && info.isPublic) {
-					// TODO get all required classes for each of these robots
-					// not sure if I need those yet, but I will find out soon
-					// enough
-					robots.add(info);
-				}
-			}
-		}
-	}
 }

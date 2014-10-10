@@ -38,8 +38,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
 
+import org.csdgn.plugin.ClassInfo;
 import org.csdgn.rf.Engine;
-import org.csdgn.rf.db.ClassInfo;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

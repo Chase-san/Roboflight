@@ -43,17 +43,16 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.RepaintManager;
 import javax.swing.WindowConstants;
-
 import javax.swing.JButton;
 import javax.swing.JSlider;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
+import org.csdgn.plugin.ClassInfo;
 import org.csdgn.rf.BattleRunner;
 import org.csdgn.rf.Engine;
 import org.csdgn.rf.Roboflight;
-import org.csdgn.rf.db.ClassInfo;
 
 /**
  * Main display window for the game. By the way, I hate GUIs.

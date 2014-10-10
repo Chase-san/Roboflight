@@ -26,7 +26,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import org.csdgn.rf.db.ClassInfo;
+import org.csdgn.plugin.ClassInfo;
 import org.csdgn.rf.db.RobotDatabase;
 
 import roboflight.Robot;
@@ -47,9 +47,7 @@ public class Engine {
 		// test directory
 		database = new RobotDatabase();
 
-		database.addDirectory("robots");
-
-		database.rebuildDatabase();
+		database.build();
 
 		battleExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
 			@Override

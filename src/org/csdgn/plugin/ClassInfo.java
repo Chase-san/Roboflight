@@ -20,13 +20,14 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package org.csdgn.rf.db;
+package org.csdgn.plugin;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StreamCorruptedException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -35,51 +36,85 @@ import java.util.HashMap;
  * @author Robert Maupin
  */
 public class ClassInfo {
-	public static ClassInfo getClassInfo(InputStream cis) throws IOException {
-		DataInputStream dis = new DataInputStream(new BufferedInputStream(cis));
+	public final String thisName;
+	public final String superName;
+	private final String[] interfaceNames;
+	private final String[] referenceNames;
+	public final int majorVersion;
+	public final int minorVersion;
+	public final int codeSize;
+	public final boolean isPublic;
+	public final boolean isAbstract;
+	public final boolean isFinal;
+	public final boolean isInterface;
+	
+	private ClassOrigin origin;
+
+	private static final int[] CONSTANT_POOL_BYTES = new int[] { 0, 0, 0, 4, 4, 8, 8, 2, 2, 4, 4, 4, 4 };
+	
+	public ClassInfo(InputStream in) throws IOException {
+		this(new DataInputStream(new BufferedInputStream(in)));
+	}
+	
+	public ClassInfo(DataInputStream dis) throws IOException {
 		int magic = dis.readInt();
 		if(magic != 0xCAFEBABE) {
-			return null;
+			throw new StreamCorruptedException();
 		}
-
-		ClassInfo info = new ClassInfo();
-		info.minorVersion = dis.readUnsignedShort();
-		info.majorVersion = dis.readUnsignedShort();
+		
+		minorVersion = dis.readUnsignedShort();
+		majorVersion = dis.readUnsignedShort();
 
 		int constant_pool_count = dis.readUnsignedShort();
 		int pool_index = 1; // <--- is not a typo
 		int code_index = -1;
+		
+		HashMap<Integer, String> constants = new HashMap<Integer, String>();
+		ArrayList<Integer> classReferences = new ArrayList<Integer>();
+		
 		while(pool_index < constant_pool_count) {
 			int tag = dis.readUnsignedByte();
 			// only save the strings, the other ones do not matter
 			if(tag == 1) {
+				/* String */
 				int length = dis.readUnsignedShort();
 				byte[] data = new byte[length];
 				dis.read(data);
 				String str = new String(data);
-				info.constants.put(pool_index, str);
+				constants.put(pool_index, str);
 				if("Code".equals(str)) {
 					code_index = pool_index;
 				}
+			} else if(tag == 7) {
+				/* Class Reference */
+				classReferences.add(dis.readUnsignedShort());
 			} else {
 				dis.skip(CONSTANT_POOL_BYTES[tag]);
 			}
 
 			++pool_index;
 			if(tag == 5 || tag == 6) {
-				++pool_index;
+				++pool_index; /* long and double take two slots in the constants pool */
 			}
 		}
+		/* convert class references */
+		referenceNames = new String[classReferences.size()];
+		
+		for(int i = 0; i < classReferences.size(); ++i) {
+			referenceNames[i] = constants.get(classReferences.get(i));
+		}
+		
 		int flags = dis.readUnsignedShort();
-		info.isPublic = (flags & 0x1) != 0;
-		info.isFinal = (flags & 0x10) != 0;
-		info.isInterface = (flags & 0x200) != 0;
-		info.isAbstract = (flags & 0x400) != 0;
-		info.thisName = info.constants.get(dis.readUnsignedShort() + 1);
-		info.superName = info.constants.get(dis.readUnsignedShort() + 1);
-		info.interfaceNames = new String[dis.readUnsignedShort()];
-		for(int i = 0; i < info.interfaceNames.length; ++i) {
-			info.interfaceNames[i] = info.constants.get(dis.readUnsignedShort() + 1);
+		isPublic = (flags & 0x1) != 0;
+		isFinal = (flags & 0x10) != 0;
+		isInterface = (flags & 0x200) != 0;
+		isAbstract = (flags & 0x400) != 0;
+		thisName = constants.get(dis.readUnsignedShort() + 1);
+		superName = constants.get(dis.readUnsignedShort() + 1);
+		interfaceNames = new String[dis.readUnsignedShort()];
+		for(int i = 0; i < interfaceNames.length; ++i) {
+			
+			interfaceNames[i] = constants.get(dis.readUnsignedShort() + 1);
 		}
 		// fields
 		int fcount = dis.readUnsignedShort();
@@ -94,6 +129,7 @@ public class ClassInfo {
 
 		// methods !!! (will always be at least 1)
 		int mcount = dis.readUnsignedShort();
+		int tCodeSize = 0;
 		while(mcount-- > 0) {
 			dis.skip(6);
 			int count = dis.readUnsignedShort();
@@ -102,35 +138,30 @@ public class ClassInfo {
 					// CODE
 					int attrlen = dis.readInt() & 0x7FFFFFFF;
 					dis.skip(4);
-					info.codeSize += dis.readInt() & 0x7FFFFFFF;
+					tCodeSize += dis.readInt() & 0x7FFFFFFF;
 					dis.skip(attrlen - 8);
 				} else {
 					dis.skip(dis.readInt() & 0x7FFFFFFF);
 				}
 			}
 		}
-
-		return info;
+		codeSize = tCodeSize;
 	}
-
-	public String thisName;
-	public String superName;
-	public String[] interfaceNames;
-	public HashMap<Integer, String> constants;
-	public int majorVersion;
-	public int minorVersion;
-	public int codeSize;
-	public boolean isPublic;
-	public boolean isAbstract;
-	public boolean isFinal;
-	public boolean isInterface;
-
-	public File parent;
-
-	private static final int[] CONSTANT_POOL_BYTES = new int[] { 0, 0, 0, 4, 4, 8, 8, 2, 2, 4, 4, 4, 4 };
-
-	private ClassInfo() {
-		constants = new HashMap<Integer, String>();
+	
+	public void setOrigin(ClassOrigin origin) {
+		this.origin = origin;
+	}
+	
+	public ClassOrigin getOrigin() {
+		return origin;
+	}
+	
+	public String[] getInterfaceNames() {
+		return interfaceNames.clone();
+	}
+	
+	public String[] getClassReferenceNames() {
+		return referenceNames.clone();
 	}
 
 	@Override
