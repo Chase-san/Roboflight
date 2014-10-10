@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.csdgn.utils.Files;
+
 public class PluginClassLoader extends ClassLoader {
 	private static class AccessList {
 		private static boolean matchWildcard(String pattern, String test) {
@@ -37,35 +39,6 @@ public class PluginClassLoader extends ClassLoader {
 		public void reset() {
 			accessList.clear();
 		}
-	}
-
-	private static final int IO_BUFFER_SIZE = 16384;
-
-	private static byte[] getAndClose(InputStream stream) throws IOException {
-		if(stream != null) {
-			try {
-				final BufferedInputStream input = new BufferedInputStream(stream);
-				final ByteArrayOutputStream buffer = new ByteArrayOutputStream(); /* magic */
-				final byte[] reader = new byte[IO_BUFFER_SIZE];
-				int r = 0;
-				while((r = input.read(reader, 0, IO_BUFFER_SIZE)) != -1) {
-					buffer.write(reader, 0, r);
-				}
-				buffer.flush();
-				return buffer.toByteArray();
-			} finally {
-				stream.close();
-			}
-		}
-		return null;
-	}
-
-	private static byte[] getFileContents(File file) {
-		try {
-			return getAndClose(new FileInputStream(file));
-		} catch(IOException e) {
-		}
-		return null;
 	}
 
 	private AccessList white = new AccessList();
@@ -97,7 +70,7 @@ public class PluginClassLoader extends ClassLoader {
 			return;
 		}
 
-		byte[] data = getFileContents(co.file);
+		byte[] data = Files.getFileContents(co.file);
 		String name = info.thisName.replace('/', '.');
 		super.defineClass(name, data, 0, data.length);
 		white.addRule(name);
@@ -110,7 +83,7 @@ public class PluginClassLoader extends ClassLoader {
 		try {
 			for(ClassInfo dep : PluginService.getDependancies(info)) {
 				ZipEntry e = zip.getEntry(dep.getOrigin().path);
-				byte[] data = getAndClose(zip.getInputStream(e));
+				byte[] data = Files.getAndClose(zip.getInputStream(e));
 				String name = dep.thisName.replace('/', '.');
 				super.defineClass(name, data, 0, data.length);
 				white.addRule(name);

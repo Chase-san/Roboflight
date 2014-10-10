@@ -26,22 +26,21 @@
 		<mkdir dir="${outdir}" />
 		<mkdir dir="${outdir}/libs" />
 		
+		<javadoc sourcepath="api" destdir="${outdir}/docs" />
+		
 		<copy todir="${outdir}/robots">
 			<fileset dir="robots" />
 		</copy>
 		
-		<copy todir="${outdir}">
-			<fileset dir="libs/native" />
-		</copy>
-		
+		<!-- skip this for now...
 		<copy todir="${outdir}/libs">
-			<fileset dir="libs" >
-				<exclude name="native/**"/>
-			</fileset>
+			<fileset dir="libs" />
 		</copy>
+		-->
 		
 		<copy todir="${outdir}" file="README.md" />
 		<copy todir="${outdir}" file="roboflight.bat" />
+		<copy todir="${outdir}" file="roboflight.sh" />
 		
 		<jar duplicate="add" basedir="bin" destfile="${outdir}/libs/roboflight.api.jar" compress="true">
 			<include name="roboflight/**/*.class" />

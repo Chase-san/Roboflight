@@ -171,7 +171,7 @@ public class Vector implements Cloneable {
 	/**
 	 * Calculates the Euler distance from this vector to the given vector.
 	 * 
-	 * @param p
+	 * @param q
 	 *            The target vector.
 	 * @return The Euler distance to the given vector.
 	 */
@@ -183,7 +183,7 @@ public class Vector implements Cloneable {
 	 * Calculates the square of the Euler distance from this vector to the given
 	 * vector.
 	 * 
-	 * @param p
+	 * @param q
 	 *            The target vector.
 	 * @return The square of the Euler distance to the given vector.
 	 */
