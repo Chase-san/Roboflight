@@ -66,7 +66,7 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	private double energy = Rules.ROBOT_START_ENERGY;
 	private int others = 0;
 	private long time = 0;
-	
+
 	public RobotPeerImpl(Robot robot) {
 		this.robot = robot;
 	}
@@ -197,13 +197,13 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 				robot.setRobotPeer(this);
 				robot.setOut(new PrintWriter(out));
 			}
-			
+
 			while(!eventQueue.isEmpty()) {
 				Event e = eventQueue.pop();
-	
+
 				/*
-				 * - IMPORTANT - Keep these in alphabetical order. That way it is
-				 * easy to check if any are missing.
+				 * - IMPORTANT - Keep these in alphabetical order. That way it
+				 * is easy to check if any are missing.
 				 */
 				if(e instanceof BattleStartedEvent) {
 					robot.onBattleStarted((BattleStartedEvent) e);
@@ -279,13 +279,11 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		fireMissile = true;
 		missile = new MissileImpl(this);
 		missile.getPositionVector().set(position);
-		Vector mv = missile.getVelocityVector();
-		mv.set(velocity);
-		Vector tv = target;
-		if(target.lengthSq() > Rules.MISSILE_MAX_LAUNCH_VELOCITY * Rules.MISSILE_MAX_LAUNCH_VELOCITY) {
-			tv = target.clone().normalize().scale(Rules.MISSILE_MAX_LAUNCH_VELOCITY);
+		Vector mVel = missile.getVelocityVector();
+		mVel.set(target);
+		if(mVel.lengthSq() > Rules.MISSILE_MAX_VELOCITY * Rules.MISSILE_MAX_VELOCITY) {
+			mVel.normalize().scale(Rules.MISSILE_MAX_VELOCITY);
 		}
-		mv.add(tv);
 
 		return missile;
 	}

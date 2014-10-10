@@ -441,8 +441,8 @@ public class BattleRunner implements Runnable {
 				// update robots with the missiles information
 				// only if a line between them is unbroken (by other robots)
 				// and the missile is moving.
-				if(m.getVelocityVector().lengthSq() > Rules.MISSILE_NO_VELOCITY_THRESHOLD
-						* Rules.MISSILE_NO_VELOCITY_THRESHOLD) {
+				if(m.getVelocityVector().lengthSq() > Rules.MISSILE_HIDDEN_VELOCITY_THRESHOLD
+						* Rules.MISSILE_HIDDEN_VELOCITY_THRESHOLD) {
 					for(RobotPeerImpl rp : robots) {
 
 						boolean blocked = false;
