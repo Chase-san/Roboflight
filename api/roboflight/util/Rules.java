@@ -55,8 +55,8 @@ public final class Rules {
 	}
 
 	public static final boolean isRobotInBattlefield(final Vector position) {
-		return position.lengthSq() < Rules.BATTLEFIELD_RADIUS * Rules.BATTLEFIELD_RADIUS - Rules.ROBOT_RADIUS
-				* Rules.ROBOT_RADIUS;
+		double radius = Rules.BATTLEFIELD_RADIUS - Rules.ROBOT_RADIUS;
+		return position.lengthSq() < radius*radius;
 	}
 
 	private Rules() {

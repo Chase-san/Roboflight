@@ -330,6 +330,13 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		if(!Rules.isRobotInBattlefield(position.clone().add(velocity))) {
 			velocity.set(0, 0, 0);
 			hitWall = true;
+			/*
+			 * Place robot in the nearest position that is within the
+			 * battlefield. This is simpler then calculating the precise
+			 * velocity needed to get to the wall, but the result is the same.
+			 */
+			position.normalize();
+			position.scale(Rules.BATTLEFIELD_RADIUS - Rules.ROBOT_RADIUS - Double.MIN_VALUE);
 		}
 
 		// update position
