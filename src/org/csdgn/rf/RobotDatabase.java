@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.csdgn.plugin.ClassInfo;
 import org.csdgn.plugin.ClassOrigin;
@@ -55,10 +56,6 @@ public class RobotDatabase {
 		service.addClass(BasicRobot.class);
 	}
 
-	public ArrayList<ClassInfo> getRobotList() {
-		return robots;
-	}
-
 	public void build() {
 		try {
 			service.build();
@@ -74,36 +71,17 @@ public class RobotDatabase {
 		}
 	}
 
-	private URL[] getClassRequirements(ClassInfo info) throws IOException {
-		/*
-		 * later on, using this, we can determine if the robot includes any
-		 * classes we don't want them using which is better then a security
-		 * manager in many respects.. white list anything in the jar, a few JRE
-		 * stuff, and the roboflight api stuff
-		 * 
-		 * But for now...
-		 */
-
-		ArrayList<URL> urls = new ArrayList<URL>();
-		ArrayList<ClassInfo> depends = PluginService.getDependancies(info);
-
-		for(ClassInfo depinfo : depends) {
-			urls.add(depinfo.getOrigin().file.toURI().toURL());
-		}
-
-		return urls.toArray(new URL[urls.size()]);
-	}
-
 	public Robot createRobotInstance(final ClassInfo info) throws IOException, ReflectiveOperationException {
 		final URLClassLoader loader;
 		final ClassOrigin origin = info.getOrigin();
 		if(origin.inJar) {
 			loader = new URLClassLoader(new URL[] { origin.file.toURI().toURL() }, ClassLoader.getSystemClassLoader());
 		} else {
-			loader = new URLClassLoader(getClassRequirements(info), ClassLoader.getSystemClassLoader());
+			loader = new URLClassLoader(getRequirementURLs(info), ClassLoader.getSystemClassLoader());
 		}
 
-		// For when we go to implement the output change
+		// For when we go to implement the output change (not sure if this will
+		// work though)
 
 		// Class<?> system = loader.loadClass("java.lang.System");
 		// ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -116,6 +94,30 @@ public class RobotDatabase {
 		loader.close();
 
 		return (Robot) robot.newInstance();
+	}
+
+	private URL[] getRequirementURLs(ClassInfo info) throws IOException {
+		/*
+		 * later on, using this, we can determine if the robot includes any
+		 * classes we don't want them using which is better then a security
+		 * manager in many respects.. white list anything in the jar, a few JRE
+		 * stuff, and the roboflight api stuff
+		 * 
+		 * But for now...
+		 */
+
+		ArrayList<URL> urls = new ArrayList<URL>();
+		Set<ClassInfo> depends = PluginService.getDependancies(info);
+
+		for(ClassInfo depinfo : depends) {
+			urls.add(depinfo.getOrigin().file.toURI().toURL());
+		}
+
+		return urls.toArray(new URL[urls.size()]);
+	}
+
+	public ArrayList<ClassInfo> getRobotList() {
+		return robots;
 	}
 
 }

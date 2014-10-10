@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -43,11 +45,43 @@ public class PluginService {
 	private static final String JAR_EXT = ".jar";
 	private static final String CLASS_EXT = ".class";
 
+	private static void depends(ClassInfo info, HashMap<String, ClassInfo> db, HashSet<ClassInfo> set) {
+		set.add(info);
+		ClassInfo nfo = db.get(info.superName);
+		if(nfo != null && !set.contains(nfo)) {
+			set.add(nfo);
+			depends(nfo, db, set);
+		}
+		for(String inter : info.getInterfaceNames()) {
+			nfo = db.get(inter);
+			if(nfo != null && !set.contains(nfo)) {
+				set.add(nfo);
+				depends(nfo, db, set);
+
+			}
+		}
+		for(String ref : info.getClassReferenceNames()) {
+			nfo = db.get(ref);
+			if(nfo != null && !set.contains(nfo)) {
+				set.add(nfo);
+				depends(nfo, db, set);
+			}
+		}
+	}
+
+	public static Set<ClassInfo> getDependancies(ClassInfo info) {
+		HashSet<ClassInfo> set = new HashSet<ClassInfo>();
+		depends(info, info.getOrigin().database, set);
+		return set;
+	}
+
 	private ArrayList<String> interfaces;
 	private ArrayList<String> classes;
 	private ArrayList<File> exploreDirs;
 	private ArrayList<HashMap<String, ClassInfo>> looseDBs;
+
 	private ArrayList<HashMap<String, ClassInfo>> jarDBs;
+
 	private ArrayList<ClassInfo> list;
 
 	public PluginService() {
@@ -182,35 +216,7 @@ public class PluginService {
 		jarDBs.add(db);
 	}
 
-	private static void depends(ClassInfo info, HashMap<String, ClassInfo> db, ArrayList<ClassInfo> list) {
-		ClassInfo nfo = db.get(info.superName);
-		if(nfo != null) {
-			depends(nfo, db, list);
-			list.add(nfo);
-		}
-		for(String inter : info.getInterfaceNames()) {
-			nfo = db.get(inter);
-			if(nfo != null) {
-				depends(nfo, db, list);
-				list.add(nfo);
-			}
-		}
-		for(String ref : info.getClassReferenceNames()) {
-			nfo = db.get(ref);
-			if(nfo != null) {
-				depends(nfo, db, list);
-				list.add(nfo);
-			}
-		}
-	}
-
-	public static ArrayList<ClassInfo> getDependancies(ClassInfo info) {
-		ArrayList<ClassInfo> list = new ArrayList<ClassInfo>();
-		depends(info, info.getOrigin().database, list);
-		return list;
-	}
-
-	public ArrayList<ClassInfo> getList() {
+	public List<ClassInfo> getList() {
 		return list;
 	}
 

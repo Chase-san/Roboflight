@@ -27,8 +27,9 @@ import java.util.HashMap;
 
 /**
  * A class to list the origin of a given class.
+ * 
  * @author Robert Maupin
- *
+ * 
  */
 public class ClassOrigin {
 	public final boolean inJar;
@@ -38,14 +39,14 @@ public class ClassOrigin {
 
 	public ClassOrigin(HashMap<String, ClassInfo> database, File file) {
 		this.database = database;
-		this.inJar = false;
+		inJar = false;
 		this.file = file;
-		this.path = null;
+		path = null;
 	}
 
 	public ClassOrigin(HashMap<String, ClassInfo> database, File file, String path) {
 		this.database = database;
-		this.inJar = true;
+		inJar = true;
 		this.file = file;
 		this.path = path;
 	}

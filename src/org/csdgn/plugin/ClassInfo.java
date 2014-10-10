@@ -52,10 +52,6 @@ public class ClassInfo {
 
 	private static final int[] CONSTANT_POOL_BYTES = new int[] { 0, 0, 0, 4, 4, 8, 8, 2, 2, 4, 4, 4, 4 };
 
-	protected ClassInfo(InputStream in) throws IOException {
-		this(new DataInputStream(new BufferedInputStream(in)));
-	}
-
 	protected ClassInfo(DataInputStream dis) throws IOException {
 		int magic = dis.readInt();
 		if(magic != 0xCAFEBABE) {
@@ -151,20 +147,29 @@ public class ClassInfo {
 		codeSize = tCodeSize;
 	}
 
-	protected void setOrigin(ClassOrigin origin) {
-		this.origin = origin;
+	protected ClassInfo(InputStream in) throws IOException {
+		this(new DataInputStream(new BufferedInputStream(in)));
 	}
 
-	public ClassOrigin getOrigin() {
-		return origin;
+	public String[] getClassReferenceNames() {
+		return referenceNames.clone();
 	}
 
 	public String[] getInterfaceNames() {
 		return interfaceNames.clone();
 	}
 
-	public String[] getClassReferenceNames() {
-		return referenceNames.clone();
+	public ClassOrigin getOrigin() {
+		return origin;
+	}
+
+	@Override
+	public int hashCode() {
+		return thisName.hashCode();
+	}
+
+	protected void setOrigin(ClassOrigin origin) {
+		this.origin = origin;
 	}
 
 	@Override
