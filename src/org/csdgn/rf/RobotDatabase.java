@@ -87,6 +87,16 @@ public class RobotDatabase {
 		loader.whitelist("java.awt.Point");
 		loader.whitelist("java.awt.Rectangle");
 		loader.whitelist("java.awt.geom.**");
+		loader.whitelist("java.io.**");
+		loader.blacklist("java.io.Console");
+		loader.blacklist("java.io.File");
+		loader.blacklist("java.io.FileDescriptor");
+		loader.blacklist("java.io.FileInputStream");
+		loader.blacklist("java.io.FileOutputStream");
+		loader.blacklist("java.io.FilePermission");
+		loader.blacklist("java.io.FileReader");
+		loader.blacklist("java.io.FileWriter");
+		loader.blacklist("java.io.RandomAccessFile");
 		loader.whitelist("java.lang.**");
 		loader.blacklist("java.lang.SecurityManager");
 		loader.blacklist("java.lang.Thread");
@@ -96,14 +106,12 @@ public class RobotDatabase {
 		loader.blacklist("java.lang.RuntimePermission");
 		loader.blacklist("java.lang.ProcessBuilder");
 		loader.blacklist("java.lang.Process");
-		/* until I can find a neater way to handle it... */
 		loader.blacklist("java.lang.System");
 		loader.blacklist("java.lang.InheritableThreadLocal");
 		loader.blacklist("java.lang.instrument.**");
 		loader.blacklist("java.lang.invoke.**");
 		loader.blacklist("java.lang.management.**");
 		loader.blacklist("java.lang.ref.**");
-		/* reflection is just a boatload of trouble */
 		loader.blacklist("java.lang.reflect.**");
 		loader.whitelist("java.math.**");
 		loader.whitelist("java.util.**");
@@ -114,15 +122,6 @@ public class RobotDatabase {
 		loader.blacklist("java.util.spi.**");
 		loader.blacklist("java.util.zip.**");
 
-		// For when we go to implement the output change (not sure if this will
-		// work though)
-
-		// Class<?> system = loader.loadClass("java.lang.System");
-		// ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		// PrintStream out = new PrintStream(baos, true, "UTF-8");
-		// system.getMethod("setOut", PrintStream.class).invoke(null, out);
-		// system.getMethod("setErr", PrintStream.class).invoke(null, out);
-
 		Class<?> robot = loader.loadClass(info.toString());
 
 		return (Robot) robot.newInstance();
@@ -131,5 +130,4 @@ public class RobotDatabase {
 	public ArrayList<ClassInfo> getRobotList() {
 		return robots;
 	}
-
 }

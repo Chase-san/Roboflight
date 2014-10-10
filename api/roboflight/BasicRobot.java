@@ -23,6 +23,7 @@
 package roboflight;
 
 import java.awt.Color;
+import java.io.PrintWriter;
 
 import roboflight.events.BattleStartedEvent;
 import roboflight.events.BulletHitEvent;
@@ -47,6 +48,7 @@ import roboflight.util.Vector;
  */
 public class BasicRobot implements Robot, RobotPeer {
 	private RobotPeer peer;
+	public PrintWriter out;
 
 	@Override
 	public int getBulletDelay() {
@@ -164,5 +166,10 @@ public class BasicRobot implements Robot, RobotPeer {
 	@Override
 	public void setThrust(Vector thrust) {
 		peer.setThrust(thrust);
+	}
+
+	@Override
+	public void setOut(PrintWriter out) {
+		this.out = out;
 	}
 }

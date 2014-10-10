@@ -71,8 +71,7 @@ public class BattleRunner implements Runnable {
 			if(r == null) {
 				continue;
 			}
-			RobotPeerImpl peer = new RobotPeerImpl();
-			peer.setRobot(r);
+			RobotPeerImpl peer = new RobotPeerImpl(r);
 			String name = r.getClass().getName();
 			Integer n = named.get(name);
 			if(n == null) {
@@ -94,9 +93,8 @@ public class BattleRunner implements Runnable {
 				p.set((Math.random() * 2 - 1) * Rules.BATTLEFIELD_RADIUS, (Math.random() * 2 - 1)
 						* Rules.BATTLEFIELD_RADIUS, (Math.random() * 2 - 1) * Rules.BATTLEFIELD_RADIUS);
 			} while(!Rules.isRobotInBattlefield(p));
-
+			
 			runner.robots.add(peer);
-			r.setRobotPeer(peer);
 		}
 
 		return runner;
@@ -194,7 +192,7 @@ public class BattleRunner implements Runnable {
 
 			/* hit wall */
 			for(RobotPeerImpl rp : robots) {
-				if(rp.didHitWall()) {
+				if(rp.isEnabled() && rp.didHitWall()) {
 					HitWallEventImpl hwe = new HitWallEventImpl(tick, rp.getPosition());
 					rp.addEvent(hwe);
 				}

@@ -22,6 +22,8 @@
  */
 package roboflight;
 
+import java.io.PrintWriter;
+
 import roboflight.events.BattleStartedEvent;
 import roboflight.events.BulletHitEvent;
 import roboflight.events.BulletMissEvent;
@@ -114,12 +116,20 @@ public interface Robot {
 	public void onTurnStarted(TurnStartedEvent e);
 
 	/**
-	 * Used to set the RobotPeer for this robot. There shouldn't be a need to
-	 * call this method yourself.
+	 * Used to set the RobotPeer for this robot. There shouldn't be a need for a
+	 * robot to call this method itself.
 	 * 
 	 * @param peer
 	 *            The RobotPeer set by the game
 	 */
 	public void setRobotPeer(RobotPeer peer);
 
+	/**
+	 * Used to set the PrintWriter output for this robot. There shouldn't be a
+	 * need for a robot to call this method itself.
+	 * 
+	 * @param out
+	 *            The PrintWriter set by the game.
+	 */
+	public void setOut(PrintWriter out);
 }

@@ -23,6 +23,8 @@
 package org.csdgn.rf.peer;
 
 import java.awt.Color;
+import java.io.CharArrayWriter;
+import java.io.PrintWriter;
 import java.util.ArrayDeque;
 
 import org.csdgn.rf.CoreUtils;
@@ -47,7 +49,9 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	private final Vector position = new Vector();
 	private final Vector lastThrust = new Vector();
 	private final ArrayDeque<Event> eventQueue = new ArrayDeque<Event>();
-	private Robot robot;
+	private final Robot robot;
+	private boolean isPeerAndOutSet = false;
+	private CharArrayWriter out = new CharArrayWriter();
 	private String name;
 	private float[] color = new float[] { 1, 1, 1 };
 	private int bulletDelay = Rules.BULLET_START_DELAY;
@@ -62,6 +66,10 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	private double energy = Rules.ROBOT_START_ENERGY;
 	private int others = 0;
 	private long time = 0;
+	
+	public RobotPeerImpl(Robot robot) {
+		this.robot = robot;
+	}
 
 	public void addEvent(Event e) {
 		eventQueue.add(e);
@@ -180,7 +188,16 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	@Override
 	public void run() {
 		/* run all events here! */
+		if(!enabled) {
+			return;
+		}
 		try {
+			if(!isPeerAndOutSet) {
+				isPeerAndOutSet = true;
+				robot.setRobotPeer(this);
+				robot.setOut(new PrintWriter(out));
+			}
+			
 			while(!eventQueue.isEmpty()) {
 				Event e = eventQueue.pop();
 	
@@ -281,10 +298,6 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		others = count;
 	}
 
-	public void setRobot(final Robot robot) {
-		this.robot = robot;
-	}
-
 	@Override
 	public final void setThrust(final Vector thrust) {
 		if(CoreUtils.isBadVector(thrust)) {
@@ -331,5 +344,12 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		if(missileDelay > 0) {
 			--missileDelay;
 		}
+	}
+
+	public String getOutput() {
+		out.flush();
+		String output = out.toString();
+		out.reset();
+		return output;
 	}
 }
