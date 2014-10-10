@@ -122,22 +122,20 @@ public class PluginClassLoader extends ClassLoader {
 
 	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
+		/* Loading doesn't happen very often, so list checking here is perfectly okay. :) */
+		
 		/*
 		 * Do not even try negotiating list conflicts. Full on being somebody
 		 * else's problem at this point.
 		 */
 		if(useWhiteList && !white.matches(name)) {
-			String message = "Loading of class '" + name + "' not allowed by whitelist.";
-			//System.err.println(message);
-			//Thread.dumpStack();
-			throw new SecurityException(message);
+			throw new SecurityException("Loading of class '" + name + "' not allowed by classloader whitelist.");
 		}
+		
 		if(useBlackList && black.matches(name)) {
-			String message = "Loading of class '" + name + "' not allowed by blacklist.";
-			//System.err.println(message);
-			//Thread.dumpStack();
-			throw new SecurityException(message);
+			throw new SecurityException("Loading of class '" + name + "' not allowed by classloader blacklist.");
 		}
+		
 		return super.loadClass(name);
 	}
 
