@@ -24,13 +24,12 @@ package org.csdgn.rf;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Set;
 
 import org.csdgn.plugin.ClassInfo;
 import org.csdgn.plugin.ClassOrigin;
+import org.csdgn.plugin.PluginClassLoader;
 import org.csdgn.plugin.PluginService;
 
 import roboflight.BasicRobot;
@@ -71,16 +70,17 @@ public class RobotDatabase {
 	}
 
 	public Robot createRobotInstance(final ClassInfo info) throws IOException, ReflectiveOperationException {
-		final URLClassLoader loader;
+		final PluginClassLoader loader = new PluginClassLoader(ClassLoader.getSystemClassLoader());
 		final ClassOrigin origin = info.getOrigin();
-		if(origin.inJar) {
-			loader = new URLClassLoader(new URL[] { origin.file.toURI().toURL() }, ClassLoader.getSystemClassLoader());
-		} else {
-			loader = new URLClassLoader(getRequirementURLs(info), ClassLoader.getSystemClassLoader());
-		}
 		
-		for(URL url : getRequirementURLs(info)) {
-			System.out.println(url);
+		if(origin.inJar) {
+			loader.defineJar(info);
+		} else {
+			Set<ClassInfo> depends = PluginService.getDependancies(info);
+			for(ClassInfo dep : depends) {
+				loader.defineClass(dep);
+				System.out.println(dep);
+			}
 		}
 
 		// For when we go to implement the output change (not sure if this will
@@ -94,29 +94,7 @@ public class RobotDatabase {
 
 		Class<?> robot = loader.loadClass(info.toString());
 
-		loader.close();
-
 		return (Robot) robot.newInstance();
-	}
-
-	private URL[] getRequirementURLs(ClassInfo info) throws IOException {
-		/*
-		 * later on, using this, we can determine if the robot includes any
-		 * classes we don't want them using which is better then a security
-		 * manager in many respects.. white list anything in the jar, a few JRE
-		 * stuff, and the roboflight api stuff
-		 * 
-		 * But for now...
-		 */
-
-		ArrayList<URL> urls = new ArrayList<URL>();
-		Set<ClassInfo> depends = PluginService.getDependancies(info);
-
-		for(ClassInfo depinfo : depends) {
-			urls.add(depinfo.getOrigin().file.toURI().toURL());
-		}
-
-		return urls.toArray(new URL[urls.size()]);
 	}
 
 	public ArrayList<ClassInfo> getRobotList() {
