@@ -25,7 +25,6 @@ package org.csdgn.rf.gui;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.beans.Beans;
@@ -55,7 +54,7 @@ import roboflight.util.Vector;
  */
 public class RenderDisplay extends Canvas {
 	private static final long serialVersionUID = 6222790311368212989L;
-	
+
 	private static final float FOV = 70f;
 	private static final float NEAR_CLIP = 0.1f;
 	private static final float FAR_CLIP = 10f;
@@ -67,7 +66,7 @@ public class RenderDisplay extends Canvas {
 
 	private int width = 600;
 	private int height = 600;
-	
+
 	private boolean created = false;
 	private boolean dispose = false;
 	private boolean drag = false;
@@ -114,16 +113,6 @@ public class RenderDisplay extends Canvas {
 		matrix.clear();
 		glLoadMatrix(matrix);
 	}
-	
-	private void setupDisplay(int width, int height) {
-		glViewport(0, 0, width, height);
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-
-		GLU.gluPerspective(FOV, width / (float) height, NEAR_CLIP, FAR_CLIP);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-	}
 
 	public void create() {
 		if(!created) {
@@ -151,7 +140,7 @@ public class RenderDisplay extends Canvas {
 				e.printStackTrace();
 			}
 		}
-		
+
 		if(Display.wasResized()) {
 			width = Display.getWidth();
 			height = Display.getHeight();
@@ -246,8 +235,8 @@ public class RenderDisplay extends Canvas {
 			}
 			glEnd();
 
-			drawString((float)p.x, (float) p.y + 0.15f, (float) p.z, String.format("%.1f", rp.getEnergy()));
-			drawString((float)p.x, (float) p.y + 0.1f, (float) p.z, rp.getName());
+			drawString((float) p.x, (float) p.y + 0.15f, (float) p.z, String.format("%.1f", rp.getEnergy()));
+			drawString((float) p.x, (float) p.y + 0.1f, (float) p.z, rp.getName());
 		}
 	}
 
@@ -288,34 +277,6 @@ public class RenderDisplay extends Canvas {
 			glVertex3d(p.x, p.y, p.z);
 			glEnd();
 		}
-	}
-	
-	private void drawString(float x, float y, float z, String str) {
-		glPushMatrix();
-
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		glTranslatef(x, y, z);
-
-		alignToCamera();
-		float scale = 1f / height;
-		glScalef(scale, -scale, scale);
-
-		int width = font.width(str) >> 1;
-
-		glTranslatef(-width, 0, 0);
-		glColor3f(1f, 1f, 1f);
-
-		font.draw(str);
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-		glDisable(GL_BLEND);
-
-		glPopMatrix();
 	}
 
 	private void drawCircle(float x, float y, float z, float r, int segments) {
@@ -377,12 +338,50 @@ public class RenderDisplay extends Canvas {
 		drawCircle(x, y, z, (float) (Rules.ROBOT_RADIUS / Rules.BATTLEFIELD_RADIUS), 16);
 	}
 
+	private void drawString(float x, float y, float z, String str) {
+		glPushMatrix();
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glTranslatef(x, y, z);
+
+		alignToCamera();
+		float scale = 1f / height;
+		glScalef(scale, -scale, scale);
+
+		int width = font.width(str) >> 1;
+
+		glTranslatef(-width, 0, 0);
+		glColor3f(1f, 1f, 1f);
+
+		font.draw(str);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		glDisable(GL_BLEND);
+
+		glPopMatrix();
+	}
+
 	public boolean isCreated() {
 		return created;
 	}
 
 	public void setEngine(Engine engine) {
 		this.engine = engine;
+	}
+
+	private void setupDisplay(int width, int height) {
+		glViewport(0, 0, width, height);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		GLU.gluPerspective(FOV, width / (float) height, NEAR_CLIP, FAR_CLIP);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 	}
 
 	public void update() {

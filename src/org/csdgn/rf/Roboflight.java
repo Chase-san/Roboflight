@@ -73,7 +73,7 @@ public class Roboflight {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch(Exception e) { /* Failure is somewhat unimportant. */
 		}
-		
+
 		if(!isDevelopmentEnvironment()) {
 			// We only need to manually load the libraries if we are not
 			// in development, as the development system takes care of that.

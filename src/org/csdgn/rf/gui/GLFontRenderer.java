@@ -49,34 +49,31 @@ public class GLFontRenderer {
 	private final Font font;
 	private final Rectangle[] bounds;
 	private final int id;
-	
+
 	private double xscale = 1;
 	private double yscale = 1;
 
 	public GLFontRenderer(Font font) {
 		this.font = font;
-		
-		RenderingHints hints = new RenderingHints(
-				RenderingHints.KEY_FRACTIONALMETRICS,
+
+		RenderingHints hints = new RenderingHints(RenderingHints.KEY_FRACTIONALMETRICS,
 				RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 		hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-		
-		
-		
+
 		bounds = new Rectangle[128];
 		id = buildFontCache(hints);
 	}
-	
+
 	private int buildFontCache(RenderingHints hints) {
 		Rectangle2D maxbounds = font.getMaxCharBounds(new FontRenderContext(new AffineTransform(), false, false));
 		int width = (int) Math.ceil(maxbounds.getWidth() + 2);
 		int height = (int) Math.ceil(maxbounds.getHeight() + 2);
-		
-		BufferedImage texture = new BufferedImage(width*10, height*10, BufferedImage.TYPE_INT_ARGB);
-		
+
+		BufferedImage texture = new BufferedImage(width * 10, height * 10, BufferedImage.TYPE_INT_ARGB);
+
 		int x = 0;
 		int y = 0;
-		
+
 		for(int i = 32; i < 127; ++i) {
 			/* clear the buffer */
 			BufferedImage buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -86,40 +83,40 @@ public class GLFontRenderer {
 			gx.setColor(Color.WHITE);
 			gx.setRenderingHints(hints);
 			gx.setFont(font);
-	
-			char[] chr = new char[] { (char) i};
-	
+
+			char[] chr = new char[] { (char) i };
+
 			FontMetrics fm = gx.getFontMetrics();
 			Rectangle2D rect = fm.getStringBounds(chr, 0, 1, gx);
-	
+
 			gx.drawChars(chr, 0, 1, 0, -(int) rect.getY());
 			gx.dispose();
-	
+
 			BufferedImage sub = buffer.getSubimage((int) rect.getX(), 0, (int) rect.getWidth(), (int) rect.getHeight());
-			
+
 			if(x + sub.getWidth() > texture.getWidth()) {
 				x = 0;
 				y += height;
 			}
-			
-			Rectangle irect = new Rectangle(x,y,sub.getWidth(),sub.getHeight());
+
+			Rectangle irect = new Rectangle(x, y, sub.getWidth(), sub.getHeight());
 			bounds[i] = irect;
-			
+
 			gx.dispose();
 			gx = texture.createGraphics();
 			gx.drawImage(sub, x, y, null);
-			
-			//get ready for the next
+
+			// get ready for the next
 			x += irect.width + 1;
 		}
-		
+
 		width = texture.getWidth();
 		height = texture.getHeight();
 		int bufferSize = width * height;
-		
-		xscale = 1.0/width;
-		yscale = 1.0/height;
-		
+
+		xscale = 1.0 / width;
+		yscale = 1.0 / height;
+
 		IntBuffer buf = BufferUtils.createIntBuffer(bufferSize);
 		{
 			int[] abuf = texture.getRGB(0, 0, width, height, null, 0, width);
@@ -128,13 +125,13 @@ public class GLFontRenderer {
 			}
 		}
 		buf.flip();
-		
+
 		int textureID = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-		
+
 		return textureID;
-		
+
 	}
 
 	public void dispose() {
@@ -147,25 +144,25 @@ public class GLFontRenderer {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glEnable(GL_TEXTURE_2D);
-		
+
 		if(c < 32 || c > 127) {
 			c = '?';
 		}
-		
+
 		Rectangle rect = bounds[c];
 
 		glBindTexture(GL_TEXTURE_2D, id);
 		glBegin(GL_QUADS);
-		glTexCoord2d(rect.x*xscale, rect.y*yscale);
+		glTexCoord2d(rect.x * xscale, rect.y * yscale);
 		glVertex2i(0, 0);
 
-		glTexCoord2d((rect.x+rect.width)*xscale, rect.y*yscale);
+		glTexCoord2d((rect.x + rect.width) * xscale, rect.y * yscale);
 		glVertex2i(rect.width, 0);
 
-		glTexCoord2d((rect.x+rect.width)*xscale, (rect.y+rect.height)*yscale);
+		glTexCoord2d((rect.x + rect.width) * xscale, (rect.y + rect.height) * yscale);
 		glVertex2i(rect.width, rect.height);
 
-		glTexCoord2d((rect.x)*xscale, (rect.y+rect.height)*yscale);
+		glTexCoord2d((rect.x) * xscale, (rect.y + rect.height) * yscale);
 		glVertex2i(0, rect.height);
 		glEnd();
 
@@ -177,13 +174,13 @@ public class GLFontRenderer {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glEnable(GL_TEXTURE_2D);
-		
+
 		glBindTexture(GL_TEXTURE_2D, id);
-		
+
 		glBegin(GL_QUADS);
 
 		Rectangle rect;
-		
+
 		int x = 0;
 		for(int i = 0; i < str.length(); ++i) {
 			int c = str.charAt(i);
@@ -192,30 +189,30 @@ public class GLFontRenderer {
 			}
 			rect = bounds[c];
 
-			glTexCoord2d(rect.x*xscale, rect.y*yscale);
+			glTexCoord2d(rect.x * xscale, rect.y * yscale);
 			glVertex2i(x, 0);
 
-			glTexCoord2d((rect.x+rect.width)*xscale, rect.y*yscale);
-			glVertex2i(x+rect.width, 0);
+			glTexCoord2d((rect.x + rect.width) * xscale, rect.y * yscale);
+			glVertex2i(x + rect.width, 0);
 
-			glTexCoord2d((rect.x+rect.width)*xscale, (rect.y+rect.height)*yscale);
-			glVertex2i(x+rect.width, rect.height);
+			glTexCoord2d((rect.x + rect.width) * xscale, (rect.y + rect.height) * yscale);
+			glVertex2i(x + rect.width, rect.height);
 
-			glTexCoord2d((rect.x)*xscale, (rect.y+rect.height)*yscale);
+			glTexCoord2d((rect.x) * xscale, (rect.y + rect.height) * yscale);
 			glVertex2i(x, rect.height);
 
 			x += rect.width;
 		}
-		
+
 		glEnd();
-		
 
 		glDisable(GL_TEXTURE_2D);
 	}
 
 	public int height(int c) {
-		if(c < 32 || c > 127)
+		if(c < 32 || c > 127) {
 			return bounds['?'].height;
+		}
 		return bounds[c].height;
 	}
 
@@ -234,8 +231,9 @@ public class GLFontRenderer {
 	}
 
 	public int width(int c) {
-		if(c < 32 || c > 127)
+		if(c < 32 || c > 127) {
 			return bounds['?'].width;
+		}
 		return bounds[c].width;
 	}
 

@@ -91,7 +91,7 @@ public class MissileImpl implements Missile {
 		if(!active) {
 			return;
 		}
-		
+
 		Vector thrust = this.thrust.clone();
 
 		// normalize thrust if we need to

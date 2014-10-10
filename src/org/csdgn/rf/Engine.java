@@ -58,16 +58,16 @@ public class Engine {
 		});
 	}
 
-	public boolean isBattleRunning() {
-		return current != null && !current.isPaused();
-	}
-	
 	public BattleRunner getCurrentBattle() {
 		return current;
 	}
 
 	public RobotDatabase getDatabase() {
 		return database;
+	}
+
+	public boolean isBattleRunning() {
+		return current != null && !current.isPaused();
 	}
 
 	public void startBattle(ClassInfo[] classes) {

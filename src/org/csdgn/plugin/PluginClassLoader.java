@@ -10,35 +10,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class PluginClassLoader extends ClassLoader {
-	public PluginClassLoader(ClassLoader parent) {
-		super(parent);
-	}
-	public void defineClass(ClassInfo info) throws IOException {
-		ClassOrigin co = info.getOrigin();
-		if(co.inJar) {
-			defineJar(info);
-			return;
-		}
-		byte[] data = getFileContents(co.file);
-		super.defineClass(info.thisName.replace('/', '.'), data, 0, data.length);
-	}
-	
-	public void defineJar(ClassInfo info) throws IOException {
-		File jar = info.getOrigin().file;
-		ZipFile zip = new ZipFile(jar, ZipFile.OPEN_READ);
-		
-		try {
-			for(ClassInfo dep : PluginService.getDependancies(info)) {
-				ZipEntry e = zip.getEntry(dep.getOrigin().path);
-				byte[] data = getAndClose(zip.getInputStream(e));
-				super.defineClass(dep.thisName.replace('/', '.'), data, 0, data.length);
-			}
-		} finally {
-			zip.close();			
-		}
-	}
-	
 	private static final int IO_BUFFER_SIZE = 16384;
+
 	private static byte[] getAndClose(InputStream stream) throws IOException {
 		if(stream != null) {
 			try {
@@ -57,6 +30,7 @@ public class PluginClassLoader extends ClassLoader {
 		}
 		return null;
 	}
+
 	private static byte[] getFileContents(File file) {
 		try {
 			return getAndClose(new FileInputStream(file));
@@ -64,5 +38,34 @@ public class PluginClassLoader extends ClassLoader {
 		}
 		return null;
 	}
-	
+
+	public PluginClassLoader(ClassLoader parent) {
+		super(parent);
+	}
+
+	public void defineClass(ClassInfo info) throws IOException {
+		ClassOrigin co = info.getOrigin();
+		if(co.inJar) {
+			defineJar(info);
+			return;
+		}
+		byte[] data = getFileContents(co.file);
+		super.defineClass(info.thisName.replace('/', '.'), data, 0, data.length);
+	}
+
+	public void defineJar(ClassInfo info) throws IOException {
+		File jar = info.getOrigin().file;
+		ZipFile zip = new ZipFile(jar, ZipFile.OPEN_READ);
+
+		try {
+			for(ClassInfo dep : PluginService.getDependancies(info)) {
+				ZipEntry e = zip.getEntry(dep.getOrigin().path);
+				byte[] data = getAndClose(zip.getInputStream(e));
+				super.defineClass(dep.thisName.replace('/', '.'), data, 0, data.length);
+			}
+		} finally {
+			zip.close();
+		}
+	}
+
 }

@@ -6,7 +6,7 @@ import roboflight.util.Vector;
 public class HitWallEventImpl extends EventImpl implements HitWallEvent {
 
 	private final Vector hitPos;
-	
+
 	public HitWallEventImpl(long time, Vector hitPos) {
 		super(time);
 		this.hitPos = hitPos;

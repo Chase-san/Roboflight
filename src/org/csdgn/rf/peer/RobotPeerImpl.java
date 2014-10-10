@@ -71,22 +71,19 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		eventQueue.clear();
 	}
 
+	public boolean didHitWall() {
+		return hitWall;
+	}
+
 	public void disable() {
 		enabled = false;
 		energy = 0;
 		thrust.set(0, 0, 0);
 	}
 
-	public boolean isFiringBullet() {
-		return fireBullet;
-	}
-
-	public boolean isFiringMissile() {
-		return fireMissile;
-	}
-
-	public boolean didHitWall() {
-		return hitWall;
+	@Override
+	public int getBulletDelay() {
+		return bulletDelay;
 	}
 
 	public BulletImpl getBulletFired() {
@@ -99,14 +96,8 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		return bullet;
 	}
 
-	@Override
-	public int getMissileDelay() {
-		return missileDelay;
-	}
-
-	@Override
-	public int getBulletDelay() {
-		return bulletDelay;
+	public float[] getColor() {
+		return color;
 	}
 
 	@Override
@@ -116,6 +107,11 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 
 	public Vector getLastThrust() {
 		return lastThrust.clone();
+	}
+
+	@Override
+	public int getMissileDelay() {
+		return missileDelay;
 	}
 
 	public MissileImpl getMissileFired() {
@@ -131,6 +127,11 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	@Override
 	public final String getName() {
 		return name;
+	}
+
+	@Override
+	public int getOthers() {
+		return others;
 	}
 
 	@Override
@@ -162,6 +163,14 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	public boolean isFiringBullet() {
+		return fireBullet;
+	}
+
+	public boolean isFiringMissile() {
+		return fireMissile;
 	}
 
 	public void kill() {
@@ -208,6 +217,18 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		}
 	}
 
+	@Override
+	public void setColor(Color color) {
+		if(color == null) {
+			return;
+		}
+		this.color = color.getRGBColorComponents(null);
+		/* limit color to acceptable range, min value for each is 0.2f */
+		this.color[0] = this.color[0] * 0.8f + 0.2f;
+		this.color[1] = this.color[1] * 0.8f + 0.2f;
+		this.color[2] = this.color[2] * 0.8f + 0.2f;
+	}
+
 	public void setEnergy(final double energy) {
 		this.energy = energy;
 		if(this.energy <= 0) {
@@ -248,6 +269,10 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 
 	public void setName(final String name) {
 		this.name = name;
+	}
+
+	public void setOthersCount(int count) {
+		others = count;
 	}
 
 	public void setRobot(final Robot robot) {
@@ -300,30 +325,5 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 		if(missileDelay > 0) {
 			--missileDelay;
 		}
-	}
-
-	public void setOthersCount(int count) {
-		others = count;
-	}
-
-	@Override
-	public int getOthers() {
-		return others;
-	}
-
-	public float[] getColor() {
-		return color;
-	}
-
-	@Override
-	public void setColor(Color color) {
-		if(color == null) {
-			return;
-		}
-		this.color = color.getRGBColorComponents(null);
-		/* limit color to acceptable range, min value for each is 0.2f */
-		this.color[0] = this.color[0]*0.8f+0.2f;
-		this.color[1] = this.color[1]*0.8f+0.2f;
-		this.color[2] = this.color[2]*0.8f+0.2f;
 	}
 }

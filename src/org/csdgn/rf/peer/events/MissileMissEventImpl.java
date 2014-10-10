@@ -5,6 +5,7 @@ import roboflight.events.MissileMissEvent;
 
 public class MissileMissEventImpl extends EventImpl implements MissileMissEvent {
 	private final Missile missile;
+
 	public MissileMissEventImpl(long time, Missile missile) {
 		super(time);
 		this.missile = missile;

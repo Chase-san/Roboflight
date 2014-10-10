@@ -72,7 +72,7 @@ public class RobotDatabase {
 	public Robot createRobotInstance(final ClassInfo info) throws IOException, ReflectiveOperationException {
 		final PluginClassLoader loader = new PluginClassLoader(ClassLoader.getSystemClassLoader());
 		final ClassOrigin origin = info.getOrigin();
-		
+
 		if(origin.inJar) {
 			loader.defineJar(info);
 		} else {

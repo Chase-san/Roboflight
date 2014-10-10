@@ -60,6 +60,10 @@ import org.csdgn.rf.Roboflight;
  * @author Robert Maupin
  */
 public class MainWindow extends JFrame {
+	private enum ButtonMode {
+		PAUSE, RESUME
+	}
+
 	private class MenuController implements ActionListener {
 		@Override
 		public void actionPerformed(final ActionEvent e) {
@@ -71,10 +75,6 @@ public class MainWindow extends JFrame {
 			} else if("about".equals(cmd)) {
 			}
 		}
-	}
-	
-	private enum ButtonMode {
-		PAUSE, RESUME
 	}
 
 	private BattleDialog dialog;
@@ -232,21 +232,6 @@ public class MainWindow extends JFrame {
 		mnHelp.add(mntmAbout);
 		return menuBar;
 	}
-	
-	private void setPauseResume(ButtonMode mode) {
-		BattleRunner runner = engine.getCurrentBattle();
-		if(mode == ButtonMode.PAUSE) {
-			if(runner != null) {
-				runner.setPaused(true);
-			}
-			btnPause.setText("Resume");
-		} else {
-			if(runner != null) {
-				runner.setPaused(false);
-			}
-			btnPause.setText("Pause");
-		}
-	}
 
 	@Override
 	public void dispose() {
@@ -269,6 +254,21 @@ public class MainWindow extends JFrame {
 		dialog.initialize(engine);
 	}
 
+	private void setPauseResume(ButtonMode mode) {
+		BattleRunner runner = engine.getCurrentBattle();
+		if(mode == ButtonMode.PAUSE) {
+			if(runner != null) {
+				runner.setPaused(true);
+			}
+			btnPause.setText("Resume");
+		} else {
+			if(runner != null) {
+				runner.setPaused(false);
+			}
+			btnPause.setText("Pause");
+		}
+	}
+
 	public void start() {
 		stop();
 		timer = new Timer("GLUpdateThread", true);
@@ -287,7 +287,7 @@ public class MainWindow extends JFrame {
 		RepaintManager.currentManager(sidePanel).markCompletelyDirty(sidePanel);
 
 		engine.stopCurrentBattle();
-		
+
 		fpsSlider.setEnabled(true);
 		fpsSlider.setValue(BattleRunner.START_FPS);
 		setPauseResume(ButtonMode.RESUME);
