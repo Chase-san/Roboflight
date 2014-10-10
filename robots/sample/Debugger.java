@@ -16,11 +16,13 @@
  */
 package sample;
 
+import java.util.ArrayList;
+
 import roboflight.BasicRobot;
 import roboflight.events.*;
 
 public class Debugger extends BasicRobot {
-
+	
 	@Override
 	public void onBattleStarted(BattleStartedEvent e) {
 		System.out.println("Debug: Battle Started!");

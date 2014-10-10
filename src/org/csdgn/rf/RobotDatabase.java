@@ -56,7 +56,7 @@ public class RobotDatabase {
 
 	public void build() {
 		try {
-			service.build();
+			service.build(true, true);
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -79,9 +79,40 @@ public class RobotDatabase {
 			Set<ClassInfo> depends = PluginService.getDependancies(info);
 			for(ClassInfo dep : depends) {
 				loader.defineClass(dep);
-				System.out.println(dep);
 			}
 		}
+		
+		loader.whitelist("roboflight.**");
+		loader.whitelist("java.awt.Color");
+		loader.whitelist("java.awt.Point");
+		loader.whitelist("java.awt.Rectangle");
+		loader.whitelist("java.awt.geom.**");
+		loader.whitelist("java.lang.**");
+		loader.blacklist("java.lang.SecurityManager");
+		loader.blacklist("java.lang.Thread");
+		loader.blacklist("java.lang.ThreadGroup");
+		loader.blacklist("java.lang.ThreadLocal");
+		loader.blacklist("java.lang.Runtime");
+		loader.blacklist("java.lang.RuntimePermission");
+		loader.blacklist("java.lang.ProcessBuilder");
+		loader.blacklist("java.lang.Process");
+		/* until I can find a neater way to handle it... */
+		loader.blacklist("java.lang.System");
+		loader.blacklist("java.lang.InheritableThreadLocal");
+		loader.blacklist("java.lang.instrument.**");
+		loader.blacklist("java.lang.invoke.**");
+		loader.blacklist("java.lang.management.**");
+		loader.blacklist("java.lang.ref.**");
+		/* reflection is just a boatload of trouble */
+		loader.blacklist("java.lang.reflect.**");
+		loader.whitelist("java.math.**");
+		loader.whitelist("java.util.**");
+		loader.whitelist("java.util.concurrent.**");
+		loader.blacklist("java.util.jar.**");
+		loader.blacklist("java.util.logging.**");
+		loader.blacklist("java.util.prefs.**");
+		loader.blacklist("java.util.spi.**");
+		loader.blacklist("java.util.zip.**");
 
 		// For when we go to implement the output change (not sure if this will
 		// work though)

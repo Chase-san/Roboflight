@@ -16,6 +16,8 @@
  */
 package sample;
 
+import java.awt.Color;
+
 import roboflight.BasicRobot;
 import roboflight.events.*;
 import roboflight.util.Rules;
@@ -25,6 +27,10 @@ public class Alpha extends BasicRobot {
 	Vector thrust = new Vector();
 	double nearest = Double.POSITIVE_INFINITY;
 
+	public void onBattleStarted(BattleStartedEvent e) {
+		setColor(Color.CYAN);
+	}
+	
 	@Override
 	public void onRobotUpdate(RobotUpdateEvent e) {
 		Vector ePosition = e.getPosition();

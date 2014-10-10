@@ -112,11 +112,11 @@ public class PluginService {
 		exploreDirs.add(file);
 	}
 
-	public void build() throws IOException {
+	public void build(boolean classes, boolean jars) throws IOException {
 		HashSet<File> explored = new HashSet<File>();
 		for(File file : exploreDirs) {
 			HashMap<String, ClassInfo> db = new HashMap<String, ClassInfo>();
-			explore(file, explored, db, true, true, true, true);
+			explore(file, explored, db, true, true, classes, jars);
 			looseDBs.add(db);
 		}
 		for(int i = 0; i < looseDBs.size(); ++i) {

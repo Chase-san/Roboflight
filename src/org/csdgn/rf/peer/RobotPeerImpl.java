@@ -180,40 +180,46 @@ public class RobotPeerImpl implements RobotPeer, Runnable {
 	@Override
 	public void run() {
 		/* run all events here! */
-		while(!eventQueue.isEmpty()) {
-			Event e = eventQueue.pop();
-
-			/*
-			 * - IMPORTANT - Keep these in alphabetical order. That way it is
-			 * easy to check if any are missing.
-			 */
-			if(e instanceof BattleStartedEvent) {
-				robot.onBattleStarted((BattleStartedEvent) e);
-			} else if(e instanceof BulletHitEvent) {
-				robot.onBulletHit((BulletHitEvent) e);
-			} else if(e instanceof BulletMissEvent) {
-				robot.onBulletMiss((BulletMissEvent) e);
-			} else if(e instanceof HitByBulletEvent) {
-				robot.onHitByBullet((HitByBulletEvent) e);
-			} else if(e instanceof HitByMissileEvent) {
-				robot.onHitByMissile((HitByMissileEvent) e);
-			} else if(e instanceof HitWallEvent) {
-				robot.onHitWall((HitWallEvent) e);
-			} else if(e instanceof MissileHitEvent) {
-				robot.onMissileHit((MissileHitEvent) e);
-			} else if(e instanceof MissileMissEvent) {
-				robot.onMissileMiss((MissileMissEvent) e);
-			} else if(e instanceof MissileUpdateEvent) {
-				robot.onMissileUpdate((MissileUpdateEvent) e);
-			} else if(e instanceof RobotDeathEvent) {
-				robot.onRobotDeath((RobotDeathEvent) e);
-			} else if(e instanceof RobotUpdateEvent) {
-				robot.onRobotUpdate((RobotUpdateEvent) e);
-			} else if(e instanceof TurnEndedEvent) {
-				robot.onTurnEnded((TurnEndedEvent) e);
-			} else if(e instanceof TurnStartedEvent) {
-				robot.onTurnStarted((TurnStartedEvent) e);
+		try {
+			while(!eventQueue.isEmpty()) {
+				Event e = eventQueue.pop();
+	
+				/*
+				 * - IMPORTANT - Keep these in alphabetical order. That way it is
+				 * easy to check if any are missing.
+				 */
+				if(e instanceof BattleStartedEvent) {
+					robot.onBattleStarted((BattleStartedEvent) e);
+				} else if(e instanceof BulletHitEvent) {
+					robot.onBulletHit((BulletHitEvent) e);
+				} else if(e instanceof BulletMissEvent) {
+					robot.onBulletMiss((BulletMissEvent) e);
+				} else if(e instanceof HitByBulletEvent) {
+					robot.onHitByBullet((HitByBulletEvent) e);
+				} else if(e instanceof HitByMissileEvent) {
+					robot.onHitByMissile((HitByMissileEvent) e);
+				} else if(e instanceof HitWallEvent) {
+					robot.onHitWall((HitWallEvent) e);
+				} else if(e instanceof MissileHitEvent) {
+					robot.onMissileHit((MissileHitEvent) e);
+				} else if(e instanceof MissileMissEvent) {
+					robot.onMissileMiss((MissileMissEvent) e);
+				} else if(e instanceof MissileUpdateEvent) {
+					robot.onMissileUpdate((MissileUpdateEvent) e);
+				} else if(e instanceof RobotDeathEvent) {
+					robot.onRobotDeath((RobotDeathEvent) e);
+				} else if(e instanceof RobotUpdateEvent) {
+					robot.onRobotUpdate((RobotUpdateEvent) e);
+				} else if(e instanceof TurnEndedEvent) {
+					robot.onTurnEnded((TurnEndedEvent) e);
+				} else if(e instanceof TurnStartedEvent) {
+					robot.onTurnStarted((TurnStartedEvent) e);
+				}
 			}
+		} catch(SecurityException e) {
+			enabled = false;
+			System.out.println(name + " has thrown a security exception during operation and has been disabled.");
+			System.out.println(e.getMessage());
 		}
 	}
 
