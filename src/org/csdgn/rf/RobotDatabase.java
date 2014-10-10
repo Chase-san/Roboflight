@@ -20,7 +20,7 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package org.csdgn.rf.db;
+package org.csdgn.rf;
 
 import java.awt.peer.RobotPeer;
 import java.io.File;
@@ -42,30 +42,30 @@ import roboflight.Robot;
  * @author Robert Maupin
  */
 public class RobotDatabase {
-	
+
 	private PluginService service;
 	private ArrayList<ClassInfo> robots;
-	
+
 	public RobotDatabase() {
 		service = new PluginService();
 		robots = new ArrayList<ClassInfo>();
-		
+
 		service.addDirectory(new File("robots"));
 		service.addClass(RobotPeer.class);
 		service.addClass(BasicRobot.class);
 	}
-	
+
 	public ArrayList<ClassInfo> getRobotList() {
 		return robots;
 	}
-	
+
 	public void build() {
 		try {
 			service.build();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		for(ClassInfo info : service.getList()) {
 			if(info.isAbstract || !info.isPublic) {
 				continue;
@@ -73,35 +73,35 @@ public class RobotDatabase {
 			robots.add(info);
 		}
 	}
-	
-	private URL[] getClassRequirements(ClassInfo info) {
-		ClassOrigin origin = info.getOrigin();
-		//origin.database
-		
-		/* 
-		 * later on, using this, we can determine if the robot includes any classes we don't want them using
-		 * which is better then a security manager in many respects.. 
-		 * white list anything in the jar, a few JRE stuff, and the roboflight api stuff
+
+	private URL[] getClassRequirements(ClassInfo info) throws IOException {
+		/*
+		 * later on, using this, we can determine if the robot includes any
+		 * classes we don't want them using which is better then a security
+		 * manager in many respects.. white list anything in the jar, a few JRE
+		 * stuff, and the roboflight api stuff
 		 * 
 		 * But for now...
 		 */
-		
-		return null;
+
+		ArrayList<URL> urls = new ArrayList<URL>();
+		ArrayList<ClassInfo> depends = PluginService.getDependancies(info);
+
+		for(ClassInfo depinfo : depends) {
+			urls.add(depinfo.getOrigin().file.toURI().toURL());
+		}
+
+		return urls.toArray(new URL[urls.size()]);
 	}
 
 	public Robot createRobotInstance(final ClassInfo info) throws IOException, ReflectiveOperationException {
 		final URLClassLoader loader;
 		final ClassOrigin origin = info.getOrigin();
 		if(origin.inJar) {
-			loader = new URLClassLoader(new URL[] { origin.file.toURI().toURL() },
-					ClassLoader.getSystemClassLoader());
+			loader = new URLClassLoader(new URL[] { origin.file.toURI().toURL() }, ClassLoader.getSystemClassLoader());
 		} else {
-			/* TODO build info tree */
-			loader = new URLClassLoader(new URL[] { new File("robots").toURI().toURL() },
-					ClassLoader.getSystemClassLoader());
+			loader = new URLClassLoader(getClassRequirements(info), ClassLoader.getSystemClassLoader());
 		}
-		
-		
 
 		// For when we go to implement the output change
 

@@ -46,16 +46,17 @@ public class PluginService {
 	private ArrayList<String> interfaces;
 	private ArrayList<String> classes;
 	private ArrayList<File> exploreDirs;
-	private HashMap<String, ClassInfo> looseDB;
+	private ArrayList<HashMap<String, ClassInfo>> looseDBs;
 	private ArrayList<HashMap<String, ClassInfo>> jarDBs;
 	private ArrayList<ClassInfo> list;
 
 	public PluginService() {
 		interfaces = new ArrayList<String>();
 		classes = new ArrayList<String>();
-		looseDB = new HashMap<String, ClassInfo>();
 		exploreDirs = new ArrayList<File>();
 		list = new ArrayList<ClassInfo>();
+		looseDBs = new ArrayList<HashMap<String, ClassInfo>>();
+		jarDBs = new ArrayList<HashMap<String, ClassInfo>>();
 	}
 
 	public void addClass(Class<?> cls) {
@@ -79,13 +80,13 @@ public class PluginService {
 	public void build() throws IOException {
 		HashSet<File> explored = new HashSet<File>();
 		for(File file : exploreDirs) {
-			explore(file, explored, true, true, true, true);
+			HashMap<String, ClassInfo> db = new HashMap<String, ClassInfo>();
+			explore(file, explored, db, true, true, true, true);
+			looseDBs.add(db);
 		}
-		/*
-		 * we can't quantify these... so we just throw them all into the same
-		 * box
-		 */
-		buildFromDatabase(looseDB);
+		for(int i = 0; i < looseDBs.size(); ++i) {
+			buildFromDatabase(looseDBs.get(i));
+		}
 		for(int i = 0; i < jarDBs.size(); ++i) {
 			buildFromDatabase(jarDBs.get(i));
 		}
@@ -136,8 +137,8 @@ public class PluginService {
 		return false;
 	}
 
-	private void explore(File base, HashSet<File> explored, boolean subdir, boolean isRoot, boolean getClass,
-			boolean getJar) throws IOException {
+	private void explore(File base, HashSet<File> explored, HashMap<String, ClassInfo> loosedb, boolean subdir,
+			boolean isRoot, boolean getClass, boolean getJar) throws IOException {
 		if(explored.contains(base)) {
 			return;
 		}
@@ -145,7 +146,7 @@ public class PluginService {
 			explored.add(base);
 			if(subdir || isRoot) {
 				for(File file : base.listFiles()) {
-					explore(file, explored, subdir, false, getClass, getJar);
+					explore(file, explored, loosedb, subdir, false, getClass, getJar);
 				}
 			}
 		} else if(base.isFile()) {
@@ -154,8 +155,8 @@ public class PluginService {
 				FileInputStream fis = new FileInputStream(base);
 				ClassInfo info = new ClassInfo(fis);
 				fis.close();
-				info.setOrigin(new ClassOrigin(looseDB, base));
-				looseDB.put(info.thisName, info);
+				info.setOrigin(new ClassOrigin(loosedb, base.getAbsoluteFile()));
+				loosedb.put(info.thisName, info);
 			} else if(getJar && name.endsWith(JAR_EXT)) {
 				exploreJar(base);
 			}
@@ -163,7 +164,7 @@ public class PluginService {
 	}
 
 	private void exploreJar(File jar) throws IOException {
-		HashMap<String, ClassInfo> jardb = new HashMap<String, ClassInfo>();
+		HashMap<String, ClassInfo> db = new HashMap<String, ClassInfo>();
 		ZipFile zip = new ZipFile(jar, ZipFile.OPEN_READ);
 		Enumeration<? extends ZipEntry> en = zip.entries();
 		while(en.hasMoreElements()) {
@@ -171,14 +172,42 @@ public class PluginService {
 			if(e.getName().endsWith(CLASS_EXT)) {
 				InputStream in = zip.getInputStream(e);
 				ClassInfo info = new ClassInfo(in);
-				info.setOrigin(new ClassOrigin(jardb, jar, e.getName()));
-				jardb.put(info.thisName, info);
+				info.setOrigin(new ClassOrigin(db, jar.getAbsoluteFile(), e.getName()));
+				db.put(info.thisName, info);
 				in.close();
 			}
 		}
 		zip.close();
 
-		jarDBs.add(jardb);
+		jarDBs.add(db);
+	}
+
+	private static void depends(ClassInfo info, HashMap<String, ClassInfo> db, ArrayList<ClassInfo> list) {
+		ClassInfo nfo = db.get(info.superName);
+		if(nfo != null) {
+			depends(nfo, db, list);
+			list.add(nfo);
+		}
+		for(String inter : info.getInterfaceNames()) {
+			nfo = db.get(inter);
+			if(nfo != null) {
+				depends(nfo, db, list);
+				list.add(nfo);
+			}
+		}
+		for(String ref : info.getClassReferenceNames()) {
+			nfo = db.get(ref);
+			if(nfo != null) {
+				depends(nfo, db, list);
+				list.add(nfo);
+			}
+		}
+	}
+
+	public static ArrayList<ClassInfo> getDependancies(ClassInfo info) {
+		ArrayList<ClassInfo> list = new ArrayList<ClassInfo>();
+		depends(info, info.getOrigin().database, list);
+		return list;
 	}
 
 	public ArrayList<ClassInfo> getList() {
@@ -188,6 +217,8 @@ public class PluginService {
 	public void reset() {
 		classes.clear();
 		interfaces.clear();
-		looseDB.clear();
+		looseDBs.clear();
+		jarDBs.clear();
+		list.clear();
 	}
 }

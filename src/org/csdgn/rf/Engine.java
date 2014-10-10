@@ -27,7 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 import org.csdgn.plugin.ClassInfo;
-import org.csdgn.rf.db.RobotDatabase;
 
 import roboflight.Robot;
 

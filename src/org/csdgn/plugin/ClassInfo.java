@@ -47,31 +47,31 @@ public class ClassInfo {
 	public final boolean isAbstract;
 	public final boolean isFinal;
 	public final boolean isInterface;
-	
+
 	private ClassOrigin origin;
 
 	private static final int[] CONSTANT_POOL_BYTES = new int[] { 0, 0, 0, 4, 4, 8, 8, 2, 2, 4, 4, 4, 4 };
-	
-	public ClassInfo(InputStream in) throws IOException {
+
+	protected ClassInfo(InputStream in) throws IOException {
 		this(new DataInputStream(new BufferedInputStream(in)));
 	}
-	
-	public ClassInfo(DataInputStream dis) throws IOException {
+
+	protected ClassInfo(DataInputStream dis) throws IOException {
 		int magic = dis.readInt();
 		if(magic != 0xCAFEBABE) {
 			throw new StreamCorruptedException();
 		}
-		
+
 		minorVersion = dis.readUnsignedShort();
 		majorVersion = dis.readUnsignedShort();
 
 		int constant_pool_count = dis.readUnsignedShort();
 		int pool_index = 1; // <--- is not a typo
 		int code_index = -1;
-		
+
 		HashMap<Integer, String> constants = new HashMap<Integer, String>();
 		ArrayList<Integer> classReferences = new ArrayList<Integer>();
-		
+
 		while(pool_index < constant_pool_count) {
 			int tag = dis.readUnsignedByte();
 			// only save the strings, the other ones do not matter
@@ -94,16 +94,19 @@ public class ClassInfo {
 
 			++pool_index;
 			if(tag == 5 || tag == 6) {
-				++pool_index; /* long and double take two slots in the constants pool */
+				++pool_index; /*
+							 * long and double take two slots in the constants
+							 * pool
+							 */
 			}
 		}
 		/* convert class references */
 		referenceNames = new String[classReferences.size()];
-		
+
 		for(int i = 0; i < classReferences.size(); ++i) {
 			referenceNames[i] = constants.get(classReferences.get(i));
 		}
-		
+
 		int flags = dis.readUnsignedShort();
 		isPublic = (flags & 0x1) != 0;
 		isFinal = (flags & 0x10) != 0;
@@ -113,7 +116,7 @@ public class ClassInfo {
 		superName = constants.get(dis.readUnsignedShort() + 1);
 		interfaceNames = new String[dis.readUnsignedShort()];
 		for(int i = 0; i < interfaceNames.length; ++i) {
-			
+
 			interfaceNames[i] = constants.get(dis.readUnsignedShort() + 1);
 		}
 		// fields
@@ -147,19 +150,19 @@ public class ClassInfo {
 		}
 		codeSize = tCodeSize;
 	}
-	
-	public void setOrigin(ClassOrigin origin) {
+
+	protected void setOrigin(ClassOrigin origin) {
 		this.origin = origin;
 	}
-	
+
 	public ClassOrigin getOrigin() {
 		return origin;
 	}
-	
+
 	public String[] getInterfaceNames() {
 		return interfaceNames.clone();
 	}
-	
+
 	public String[] getClassReferenceNames() {
 		return referenceNames.clone();
 	}
