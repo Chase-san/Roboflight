@@ -43,6 +43,8 @@ import org.csdgn.rf.Engine;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class BattleDialog extends JDialog implements ActionListener {
 	private static final long serialVersionUID = -5449215626352565697L;
@@ -54,6 +56,22 @@ public class BattleDialog extends JDialog implements ActionListener {
 	private JList<ClassInfo> selectedRobotList;
 	private MainWindow owner;
 	private JButton okButton;
+	
+	private MouseAdapter listClickListener = new MouseAdapter() {
+		@SuppressWarnings("unchecked")
+		public void mouseClicked(MouseEvent e) {
+			if(e.getClickCount() == 2) {
+				JList<ClassInfo> list = (JList<ClassInfo>)e.getSource();
+				int index = list.locationToIndex(e.getPoint());
+				if(list == availableRobotList) {
+					addRobot(index);
+				} else {
+					removeRobot(index);
+				}
+			}
+			
+		}
+	};
 
 	public BattleDialog(MainWindow owner) {
 		super(owner, true);
@@ -81,22 +99,37 @@ public class BattleDialog extends JDialog implements ActionListener {
 		availableRobots = new DefaultListModel<ClassInfo>();
 		availableRobotList = new JList<ClassInfo>(availableRobots);
 		availableRobotList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		availableRobotList.addMouseListener(listClickListener);
 		availableScroll.setViewportView(availableRobotList);
 
-		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new EmptyBorder(20, 0, 20, 0));
-		contentPanel.add(panel_1);
-		panel_1.setLayout(new BorderLayout(0, 0));
+		JPanel center0 = new JPanel();
+		center0.setBorder(new EmptyBorder(20, 0, 20, 0));
+		contentPanel.add(center0);
 
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(this);
+		center0.setLayout(new BorderLayout(0, 0));
 		btnAdd.setActionCommand("add");
-		panel_1.add(btnAdd, BorderLayout.NORTH);
+		center0.add(btnAdd, BorderLayout.NORTH);
 
 		JButton btnRemove = new JButton("Remove");
 		btnRemove.addActionListener(this);
 		btnRemove.setActionCommand("remove");
-		panel_1.add(btnRemove, BorderLayout.SOUTH);
+		center0.add(btnRemove, BorderLayout.SOUTH);
+		
+		JPanel center1 = new JPanel();
+		center0.add(center1, BorderLayout.CENTER);
+		center1.setLayout(new BorderLayout(0, 0));
+		
+		JButton btnRemoveAll = new JButton("Remove All");
+		btnRemoveAll.addActionListener(this);
+		btnRemoveAll.setActionCommand("removeall");
+		center1.add(btnRemoveAll, BorderLayout.SOUTH);
+		
+		JButton btnAddAll = new JButton("Add All");
+		btnAddAll.addActionListener(this);
+		btnAddAll.setActionCommand("addall");
+		center1.add(btnAddAll, BorderLayout.NORTH);
 
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new TitledBorder(null, "Selected Robots", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -110,6 +143,7 @@ public class BattleDialog extends JDialog implements ActionListener {
 		selectedRobots = new DefaultListModel<ClassInfo>();
 		selectedRobotList = new JList<ClassInfo>(selectedRobots);
 		selectedRobotList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		selectedRobotList.addMouseListener(listClickListener);
 		selectedScroll.setViewportView(selectedRobotList);
 		{
 			JPanel buttonPane = new JPanel();
@@ -139,6 +173,29 @@ public class BattleDialog extends JDialog implements ActionListener {
 		setLocationRelativeTo(owner);
 	}
 
+	private void addRobot(int selected) {
+		if(selected == -1 || selected >= availableRobots.size()) {
+			return;
+		}
+		selectedRobots.addElement(availableRobots.get(selected));
+		okButton.setEnabled(true);
+	}
+	
+	private void removeRobot(int selected) {
+		if(selected == -1 || selected >= selectedRobots.size()) {
+			return;
+		}
+		selectedRobots.remove(selected);
+		int size = selectedRobots.size();
+		if(selected >= size) {
+			selected = size - 1;
+		}
+		selectedRobotList.setSelectedIndex(selected);
+		if(size == 0) {
+			okButton.setEnabled(false);
+		}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
@@ -148,26 +205,18 @@ public class BattleDialog extends JDialog implements ActionListener {
 			setVisible(false);
 			owner.startBattle();
 		} else if("add".equals(cmd)) {
-			int selected = availableRobotList.getSelectedIndex();
-			if(selected == -1) {
-				return;
-			}
-			selectedRobots.addElement(availableRobots.get(selected));
-			okButton.setEnabled(true);
+			addRobot(availableRobotList.getSelectedIndex());
 		} else if("remove".equals(cmd)) {
-			int selected = selectedRobotList.getSelectedIndex();
-			if(selected == -1) {
-				return;
+			removeRobot(selectedRobotList.getSelectedIndex());
+		} else if("addall".equals(cmd)) {
+			int size = availableRobots.size();
+			for(int i = 0; i < size; ++i) {
+				selectedRobots.addElement(availableRobots.get(i));
 			}
-			selectedRobots.remove(selected);
-			int size = selectedRobots.size();
-			if(selected >= size) {
-				selected = size - 1;
-			}
-			selectedRobotList.setSelectedIndex(selected);
-			if(size == 0) {
-				okButton.setEnabled(false);
-			}
+			okButton.setEnabled(true);
+		} else if("removeall".equals(cmd)) {
+			selectedRobots.removeAllElements();
+			okButton.setEnabled(false);
 		}
 	}
 
